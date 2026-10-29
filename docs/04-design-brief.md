@@ -1,8 +1,9 @@
-# LocaleVoice — Design Brief (Milestone 1)
+# LocaleVoice — Design Brief (Milestone 2)
 
 No interface is built in this milestone. This brief fixes the design
 principles and the concrete UI contract that Milestone 3 implements, so that
-Milestone 1 provider and script design does not close off the intended UX.
+Milestone 1–2 provider, pipeline, and script design does not close off the
+intended UX.
 
 ## 1. Design principles
 
@@ -39,7 +40,13 @@ Milestone 1 provider and script design does not close off the intended UX.
 - Never present uncertain or missing information as fact; unsupported
   questions and missing evidence get explicit "I don't know" states.
 
-## 4. Constraints from Milestone 1
+## 4. Constraints from Milestones 1–2
+
+The CLI vertical slice already defines the display contract the UI must
+keep: answer text, evidence list with source IDs and scores,
+insufficient-evidence flag, language/uncertainty note, and safe error
+detail. Milestone 3 renders these four states (Ask, Review, Answer,
+Failure) without changing their semantics.
 
 - Provider error messages must already be plain-language-friendly: short
   summaries the UI can show, with safe detail available but not prominent.
@@ -55,14 +62,14 @@ Milestone 1 provider and script design does not close off the intended UX.
 - Streamlit is the planned UI framework (Milestone 3); this brief does not
   depend on framework-specific widgets.
 
-## 6. Acceptance criteria (Milestone 1)
+## 6. Acceptance criteria (Milestone 2)
 
 - This brief agrees with the other five documents and constrains, but does
   not implement, any interface.
 
 ## 7. Non-goals
 
-- No UI of any kind is built in Milestone 1.
+- No UI of any kind is built in Milestone 2.
 - No visual design system, branding, or styling beyond this brief.
 
 ## 8. Failure states
@@ -81,5 +88,5 @@ state with a next action.
 
 ## 10. Next milestones
 
-- Milestone 2: no UI; CLI-driven retrieval and answer pipeline.
-- Milestone 3: Streamlit implementation of the four screens above.
+- Milestone 3: Streamlit implementation of the four screens above; no UI
+  in Milestone 2.

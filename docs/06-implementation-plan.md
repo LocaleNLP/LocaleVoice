@@ -1,78 +1,72 @@
-# LocaleVoice — Implementation Plan (Milestone 1)
+# LocaleVoice — Implementation Plan (Milestone 2)
 
-## 1. Milestone 1 work items (this milestone)
+## 1. Milestone 2 work items (done)
 
-1. Inspect the existing repository and environment before changing files.
-2. Write the six architecture documents (`docs/01`–`docs/06`), mutually
-   consistent, with assumptions, acceptance criteria, non-goals, failure
-   states, privacy considerations, and next milestones.
-3. Create `.env.example` without a real secret; ensure `.env` is ignored by
-   Git; keep audio fixtures out of Git.
-4. Implement `src/localevoice/providers/meta_chat.py` (Meta Model API via
-   the OpenAI SDK at `https://api.meta.ai/v1`).
-5. Implement `src/localevoice/providers/meta_asr.py` (multipart `POST` to
-   `https://api.meta.ai/v1/asr/transcribe`).
-6. Create `scripts/verify_meta_chat.py` (real hosted chat smoke test).
-7. Create `scripts/transcribe_file.py PATH_TO_WAV` (real transcription
-   smoke test).
-8. Add mocked unit tests so `python -m pytest -q` needs no network or paid
-   API call.
-9. Document exact setup, test, and smoke-test commands in `README.md`.
-10. Run tests, attempt both smoke tests, and report evidence honestly.
+1. Audited Milestone 1 (docs, code, tests); baseline 21 passing tests,
+   live chat smoke success, live-validated ASR request shape.
+2. Attempted authoritative sourcing; retrieved 3 genuine Feedipedia
+   excerpts with provenance (FAO/minstry sources that blocked automated
+   fetch were excluded, not reconstructed).
+3. Built `data/knowledge/` (manifest + JSONL, version m2-1.0.0) and
+   `data/evaluation/` (6 synthetic fixtures, version m2-eval-1.0.0).
+4. Implemented `knowledge/` (loading, validation, lexical retrieval),
+   `pipeline/` (grounded generation, run records), `evaluation/`
+   (offline/live runner, reports).
+5. Extended `providers/meta_chat.py` with `chat_complete` as the single
+   chat source; `verify_chat` delegates unchanged (no request-format
+   change; all 21 Milestone 1 tests still pass).
+6. Added `scripts/answer_question.py`, `scripts/evaluate_pipeline.py`,
+   `scripts/validate_corpus.py`.
+7. Added 44 unit tests (65 total), all offline with mocked chat.
+8. Ran live grounded answer (Darija, cited, exit 0), no-evidence check
+   (exit 0, no model call), and live evaluation (6/6 recall, 6/6 gating,
+   6/6 citation containment, 0 errors).
+9. Updated all six documents and `README.md`.
 
-## 2. Milestone 1 acceptance criteria
+## 2. Milestone 2 acceptance criteria
 
 - `python -m pytest -q` passes with no live network calls.
-- Chat smoke test makes a real request; transcription smoke test uploads a
-  real user-provided recording; both report real outcomes (success or
-  failure) without invention.
+- Corpus validates; offline evaluation passes on all fixtures.
+- Real Meta-generated answer tested with citations inside supplied IDs.
+- No-evidence path tested with no model call.
 - Errors preserve status/diagnostics without leaking keys.
-- No mocked response is presented as a real model result.
-- Definition of done from the milestone brief is met and reported:
-  files changed, commands, test results and exit codes, smoke-test
-  outcomes, unresolved blockers, and the single next milestone.
+- No mocked response presented as a real model result.
+- Real Darija ASR quality still pending (no consented speech tested);
+  documented, not claimed.
 
-## 3. Non-goals (Milestone 1)
+## 3. Non-goals (Milestone 2)
 
-No retrieval, agricultural advice generation, Streamlit UI, end-user
-authentication, or deployment.
+No Streamlit UI, end-user authentication, deployment, embedding
+retrieval, or language-quality claims.
 
 ## 4. Assumptions
 
 - Python 3.10+; hosted inference only.
 - `MODEL_API_KEY`, `META_CHAT_MODEL`, `META_ASR_MODEL` from the environment.
-- `python-dotenv`, `requests`, `pytest`, and the installed OpenAI SDK.
-- Darija ASR support unvalidated; Arabic bias is a hint only.
+- Narrow verified corpus; lexical baseline; synthetic fixtures.
 
 ## 5. Failure states
 
-Per `docs/03-app-flow.md`: missing key, invalid audio, network/API errors,
-and empty responses are all explicit, safe, nonzero-exit failures at the
-CLI boundary.
+Per `docs/03-app-flow.md`: missing key, invalid audio, network/API
+errors, empty responses, and empty corpora are explicit failures;
+missing evidence is a valid exit-0 insufficient-evidence result.
 
 ## 6. Privacy considerations
 
 Per `docs/05-data-and-api.md`: Git-ignored `.env` and sample audio,
-consent-gated fixtures, redacted keys.
+consent-gated fixtures, redacted keys, secret-free run records.
 
 ## 7. Next milestones
 
-### Milestone 2 — Corpus, retrieval, and grounded answers (CLI-driven)
+### Milestone 3 — Streamlit voice-first UI (the single next milestone)
 
-The single next milestone after Milestone 1:
-
-- Curate a small agricultural reference corpus with stable source IDs.
-- Implement transcript → retrieval → grounded-answer pipeline over the
-  Milestone 1 providers (reviewed transcript text in, sourced answer out).
-- CLI-driven evaluation with sample questions; still no UI, no end-user
-  auth, no deployment.
-- Begin real Darija recording tests to validate transcription quality.
-
-### Milestone 3 — Streamlit voice-first UI
-
-- Record/upload, transcript review/edit, answer plus sources, honest
+- Record/upload, transcript review/edit gate, answer plus sources, honest
   failure states, per `docs/04-design-brief.md`.
+- Wires the Milestone 2 pipeline behind the UI without changing its
+  semantics; still no end-user auth, no deployment.
 
 ### Later milestones
 
-- End-user authentication, broader Darija evaluation, deployment.
+- End-user authentication, real Darija recording evaluation (WER/CER only
+  with real audio + references), corpus expansion at the same provenance
+  bar, deployment.

@@ -32,30 +32,36 @@ def _redact(text: str, secrets: list[str]) -> str:
     return text
 
 
-def verify_chat(
-    prompt: str = SMOKE_PROMPT,
+def resolve_model(model: str | None = None) -> str:
+    """Resolve the configured chat model identifier or raise."""
+    model_id = model if model is not None else os.environ.get("META_CHAT_MODEL")
+    if not model_id:
+        raise ConfigurationError(
+            "Missing model identifier: set META_CHAT_MODEL."
+        )
+    return model_id
+
+
+def chat_complete(
+    messages: list[dict[str, str]],
     *,
     api_key: str | None = None,
     model: str | None = None,
     base_url: str = META_BASE_URL,
     timeout: float = 60.0,
 ) -> str:
-    """Send one short chat request to the Meta Model API; return its text.
+    """Send a chat request to the Meta Model API; return its text.
 
-    Raises:
-        ConfigurationError: if the API key or model identifier is missing.
-        MetaChatError: if the request fails or the response contains no text.
+    Single source for Meta chat access. Raises ConfigurationError if the
+    API key or model identifier is missing; MetaChatError if the request
+    fails or the response contains no text.
     """
     key = api_key if api_key is not None else os.environ.get("MODEL_API_KEY")
     if not key:
         raise ConfigurationError(
             "Missing API key: set the MODEL_API_KEY environment variable."
         )
-    model_id = model if model is not None else os.environ.get("META_CHAT_MODEL")
-    if not model_id:
-        raise ConfigurationError(
-            "Missing model identifier: set META_CHAT_MODEL."
-        )
+    model_id = resolve_model(model)
 
     try:
         from openai import OpenAI
@@ -63,7 +69,7 @@ def verify_chat(
         client = OpenAI(api_key=key, base_url=base_url)
         response = client.chat.completions.create(
             model=model_id,
-            messages=[{"role": "user", "content": prompt}],
+            messages=messages,
             timeout=timeout,
         )
     except Exception as exc:  # SDK/request failure: keep diagnostics, drop secrets
@@ -89,3 +95,26 @@ def verify_chat(
             "Meta chat response contained no text; treating as failure."
         )
     return text
+
+
+def verify_chat(
+    prompt: str = SMOKE_PROMPT,
+    *,
+    api_key: str | None = None,
+    model: str | None = None,
+    base_url: str = META_BASE_URL,
+    timeout: float = 60.0,
+) -> str:
+    """Send one short chat request to the Meta Model API; return its text.
+
+    Raises:
+        ConfigurationError: if the API key or model identifier is missing.
+        MetaChatError: if the request fails or the response contains no text.
+    """
+    return chat_complete(
+        [{"role": "user", "content": prompt}],
+        api_key=api_key,
+        model=model,
+        base_url=base_url,
+        timeout=timeout,
+    )

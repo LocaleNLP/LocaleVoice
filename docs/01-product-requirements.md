@@ -1,4 +1,4 @@
-# LocaleVoice — Product Requirements (Milestone 1)
+# LocaleVoice — Product Requirements (Milestone 2)
 
 ## 1. Product summary
 
@@ -32,53 +32,59 @@ interact entirely in formal written Arabic or English. Assume:
    handled honestly: the system says what happened and what the user can do,
    and never presents a mocked or guessed result as a real model output.
 
-## 4. Milestone 1 scope (this milestone)
+## 4. Milestone 2 scope (this milestone, implemented)
 
-- Six architecture documents (`docs/01`–`docs/06`) as the system of record.
-- A small Meta chat provider module (Meta Model API via the OpenAI Python SDK).
-- A real audio-file transcription provider (documented Meta ASR endpoint,
-  multipart request format).
-- `scripts/verify_meta_chat.py`: a real hosted chat smoke test.
-- `scripts/transcribe_file.py PATH_TO_WAV`: a real transcription smoke test.
-- Automated unit tests using mocks, so `python -m pytest -q` needs no network
-  access and no paid API call.
-- `README.md` with exact setup, test, and smoke-test commands.
-- `.env.example` with no real secret; `.env` ignored by Git; audio fixtures
-  kept out of Git.
+- Versioned agricultural corpus (`data/knowledge/`): 3 verified Feedipedia
+  excerpts (cowpea, olive cake, wheat grain) with full provenance, plus a
+  manifest. Narrow coverage by design.
+- Deterministic lexical retrieval baseline over the corpus, with documented
+  search-only normalization for Arabic script and French terms.
+- Grounded answer pipeline: retrieved evidence is the only permitted factual
+  basis; insufficient-evidence questions get a transparent no-guess response
+  with no model call.
+- `scripts/answer_question.py`: CLI vertical slice (question in, sourced
+  answer out, optional run-record saving).
+- `scripts/evaluate_pipeline.py`: offline and live evaluation over versioned
+  synthetic fixtures (retrieval recall, gating, citation containment,
+  latency, model ID).
+- `scripts/validate_corpus.py`: corpus schema validation.
+- 44 new unit tests (65 total), all offline with mocked chat.
 
-## 5. Non-goals for Milestone 1
+## 5. Non-goals for Milestone 2
 
-- No retrieval implementation and no agricultural reference corpus ingestion.
-- No agricultural advice generation or answer-grounding pipeline.
-- No Streamlit UI or other full user interface.
+- No Streamlit UI or other full user interface (transcript review gate still
+  pending a UI).
 - No end-user authentication.
 - No deployment, hosting, or CI/CD.
+- No embedding/vector retrieval (lexical baseline only, by design).
+- No WER/CER or language-quality claims: fixtures are synthetic and
+  manually authored, explicitly not real farmer data. Real Darija ASR
+  quality is still pending until actual consented speech is transcribed
+  and reviewed.
 
 ## 6. Assumptions
 
 - Hosted inference only; no local model inference in any milestone.
 - `MODEL_API_KEY` is provided via environment configuration and is valid for
   both the Meta Model API and the Meta ASR endpoint.
-- `META_CHAT_MODEL` and `META_ASR_MODEL` are configurable model identifiers;
-  their exact values must be confirmed against current Meta documentation.
+- `META_CHAT_MODEL=muse-spark-1.3` and `META_ASR_MODEL=muse-voice-transcribe-1.0`
+  were confirmed live via the API model list and successful requests.
 - The documented Muse Voice Transcribe language list includes Arabic but does
   not explicitly list Moroccan Darija as a separate supported language. Arabic
   language bias is treated as a hint, not a guarantee of dialect support.
-  Darija transcription quality is unvalidated until real Darija recordings are
-  tested (see `docs/02-technical-requirements.md`).
-- Short questions only in the MVP (tens of seconds of audio); long recordings
-  are out of scope until a later milestone.
+- Lexical retrieval matches shared vocabulary only; it is not Darija
+  semantic understanding and must never be described as such.
+- Short questions only in the MVP (tens of seconds of audio).
 
-## 7. Acceptance criteria (Milestone 1)
+## 7. Acceptance criteria (Milestone 2)
 
-- The six documents exist, agree with one another, and record explicit
-  assumptions, acceptance criteria, non-goals, failure states, privacy
-  considerations, and next milestones.
-- `python -m pytest -q` runs with no live network calls and passes.
-- The chat smoke test makes a real request to the Meta Model API and fails
-  clearly (missing key, request failure, empty response) instead of silently.
-- The transcription smoke test uploads an actual user-provided WAV recording
-  and validates the real API response.
+- `python -m pytest -q` passes with no network access and no paid API call.
+- `scripts/validate_corpus.py` reports the corpus valid.
+- Offline evaluation passes on all fixtures (recall + gating).
+- A real Meta-generated answer was produced with citations contained in the
+  supplied source IDs (verified in the live evaluation run).
+- A no-evidence question returns the transparent insufficient-evidence
+  response with no model call.
 - Errors preserve useful status and diagnostic information without leaking API
   keys.
 - No mocked response is presented as a real model result anywhere.
@@ -90,8 +96,9 @@ interact entirely in formal written Arabic or English. Assume:
 - API failure (network, auth, rate limit, server error): show a plain-language
   failure message with the safe diagnostic detail and offer a retry.
 - Empty or unusable model response: report it as a failure, not as an answer.
-- Unsupported question or missing evidence (later milestones): say so
-  explicitly and do not fabricate guidance.
+- Empty corpus: CLI exits with an error before retrieval.
+- Unsupported question or missing evidence: explicit insufficient-evidence
+  response; no fabricated guidance, no invented sources.
 - Invalid audio input (missing file, non-WAV): reject before any network call
   with a clear reason.
 
@@ -100,16 +107,16 @@ interact entirely in formal written Arabic or English. Assume:
 - Voice recordings are personal data. Only user-provided recordings with
   explicit approval are used for testing, and actual audio fixtures stay out of
   Git unless explicitly approved for sharing with appropriate consent.
-- API keys live in `.env` (Git-ignored), never in code, docs, logs, or error
-  messages.
-- Transcripts and answers derived from real recordings are handled as
-  user data; see `docs/05-data-and-api.md`.
+- API keys live in `.env` (Git-ignored), never in code, docs, logs, run
+  records, evaluation reports, or error messages.
+- Run records and evaluation reports store questions, evidence IDs, and
+  model outputs only; no keys or unnecessary personal data.
+- Corpus excerpts are short attributed passages stored for prototype
+  evaluation; check source terms before redistribution.
 
 ## 10. Next milestones
 
-- Milestone 2: curated agricultural reference corpus plus retrieval and
-  grounded answer generation over reviewed transcripts (still CLI-driven).
 - Milestone 3: Streamlit voice-first UI (record/upload, transcript review,
   answer plus sources, honest failure states).
 - Later: end-user authentication, evaluation on real Darija recordings,
-  deployment.
+  corpus expansion, deployment.
