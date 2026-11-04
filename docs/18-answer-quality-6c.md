@@ -55,7 +55,9 @@ one-language rule with technical-term preservation.
   unrelated claim.
 - **Hygiene flags** (Latin fragments, repeated sentences) are
   advisory tripwires, not a naturalness proof. An automated check
-  never constitutes Darija approval.
+  never constitutes Darija approval. Since 6D, Latin-fragment
+  detection applies only to Arabic-script answers (it is
+  meaningless for pure-English text).
 - Claim-level semantic verification is beyond deterministic code
   and is not claimed anywhere.
 

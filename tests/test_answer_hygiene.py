@@ -54,7 +54,10 @@ def test_validate_citations_reports_syntax_separately():
 
 def test_latin_fragments_flagged_but_known_terms_kept():
     assert find_latin_fragments("القمح seres مهم.") == ["seres"]
+    assert find_latin_fragments("Wheat is good for cattle.") == []
     assert find_latin_fragments("واش blé و niébé مزيانين؟") == []
+    assert find_latin_fragments("واش tourteau d'olive مزيان؟") == []
+    assert find_latin_fragments("القمح d'olive مهم.") == []
     assert find_latin_fragments("المصدر Feedipedia عندو.") == []
     assert find_latin_fragments("go 12 ox") == []  # short tokens ignored
 

@@ -54,9 +54,19 @@ as PASS/FAIL/BLOCKED/NOT TESTED with the observed behavior.
 python -m pytest -q
 ```
 
-All 335 unit tests mock the SDK/HTTP boundary, so this needs no API key
+All 346 unit tests mock the SDK/HTTP boundary, so this needs no API key
 and no network access. Audio-format tests use synthesized tones and
 skip compressed-container cases when FFmpeg is unavailable.
+
+Live answer evaluation (billable Meta calls, Milestone 6D):
+
+```bash
+python scripts/evaluate_live_answers.py --dry-run   # no calls
+python scripts/evaluate_live_answers.py             # up to 14 calls
+```
+
+Reports land timestamped under `data/evaluation/live/`. See
+`docs/19-live-evaluation-6d.md` for the latest results.
 
 ## Corpus validation (offline)
 

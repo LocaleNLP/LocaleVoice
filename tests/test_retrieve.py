@@ -217,6 +217,16 @@ def test_stopword_only_overlap_retrieves_nothing():
         _doc("o", "Olive cake is fed to sheep in times of scarcity."),
     ]
     assert retrieve("What is the capital of Morocco?", docs) == []
+
+
+def test_modal_and_auxiliary_verbs_are_stopwords():
+    # 6D relevance audit: "can/used" matched across excerpts.
+    assert tokenize("Can olive cake be used for sheep?") == [
+        "olive",
+        "cake",
+        "sheep",
+    ]
+    assert tokenize("used use using") == []
     assert (
         retrieve("Le blé est-il bon ?", [_doc("w", "Wheat", aliases=["blé"])])
         != []

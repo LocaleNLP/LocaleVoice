@@ -38,8 +38,9 @@ _NON_TOKEN = re.compile(r"[^\w\u0600-\u06ff]+", re.UNICODE)
 # a linguistic claim about Darija stopwords.
 STOPWORDS = frozenset(
     """
-    a an and are as at be but by for from has have in is it of on or that the
-    this to was what when with you your much many more most
+    a an and are as at be but by can for from has have in is it of on or
+    that the this to used use using was what when with you your much
+    many more most
     le la les de des du un une des et ou est sont il ils elle elles pour
     dans avec pas plus tout toute
     واش شنو شنهو هي هو هوما ديال في من علي على الى الي هل ما لا نعم هاد هدي

@@ -30,19 +30,29 @@ KNOWN_LATIN_TERMS = frozenset(
 _LATIN_WORD = re.compile(r"[A-Za-zÀ-ÿ][A-Za-zÀ-ÿ'\-]*")
 _SENTENCE_SPLIT = re.compile(r"[.!?؟\n]+")
 _URL = re.compile(r"https?://\S+|www\.\S+")
+_ARABIC_SCRIPT = re.compile(r"[\u0600-\u06ff]")
+# French elisions ("d'olive", "l'herbe"): strip the prefix before the
+# allowlist check so known terms in elided form are not flagged.
+_ELISION = re.compile(r"^(?:[dlcjmtsyqn]|qu)['’](.+)$", re.IGNORECASE)
 
 
 def find_latin_fragments(text: str) -> list[str]:
     """Latin-script words outside the known-terms allowlist.
 
-    Feeding text should already have citations stripped; URLs are
-    removed here. Short tokens (<3 letters) are ignored.
+    Applies only to Arabic-script answers (stray-fragment detection);
+    pure-Latin answers return [] since every word would trivially
+    match. Feeding text should already have citations stripped; URLs
+    are removed here. Short tokens (<3 letters) are ignored.
     """
+    if not _ARABIC_SCRIPT.search(text):
+        return []
     cleaned = _URL.sub(" ", text)
     found: list[str] = []
     for match in _LATIN_WORD.finditer(cleaned):
         word = match.group(0).strip("'-")
-        if len(word) >= 3 and word.lower() not in KNOWN_LATIN_TERMS:
+        elided = _ELISION.match(word)
+        base = elided.group(1) if elided else word
+        if len(base) >= 3 and base.lower() not in KNOWN_LATIN_TERMS:
             found.append(word)
     seen: set[str] = set()
     return [w for w in found if not (w in seen or seen.add(w))]

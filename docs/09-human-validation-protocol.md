@@ -71,3 +71,23 @@ been run yet.
 Stop the round and fix before continuing if: any fabricated citation
 or agricultural claim appears; a participant is misled into a wrong
 farming action; personal data or audio leaves the documented paths.
+
+## Generated-answer review procedure (Milestone 6D)
+
+Canned messages are reviewed in `docs/08`. Model-generated answers
+are reviewed in `docs/20-darija-answer-review-6d.md`, seeded with
+real live-evaluation outputs (never rewritten by the maintainer):
+
+1. The reviewer reads each (question, generated answer) pair as a
+   farmer would hear it — aloud when possible.
+2. For each item they record: a corrected Darija version (or "no
+   change"), naturalness 1–5, comprehension 1–5 (would a farmer
+   understand it unaided?), terminology notes (kept French terms,
+   mistranslations), and approval yes/no.
+3. Approval means: understandable, natural, and terminologically
+   safe. Anything else stays `HUMAN REVIEW PENDING` with notes.
+4. No maintainer, script, or model may mark an item approved or
+   edit a correction into the sheet — only the named reviewer.
+5. After approval, prompt wording may be adjusted to elicit the
+   approved patterns; each adjustment is re-validated by a fresh
+   live run, never assumed from the old approval.

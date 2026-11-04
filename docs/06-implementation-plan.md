@@ -1,4 +1,23 @@
-# LocaleVoice — Implementation Plan (Milestone 6C)
+# LocaleVoice — Implementation Plan (Milestone 6D)
+
+## 0k. Milestone 6D work items — live evaluation + relevance (done)
+
+1. Live evaluator (`scripts/evaluate_live_answers.py` +
+   `evaluation/live.py`, 15 cases): dry-run + live modes, full
+   per-case records incl. traces. 10 evaluator unit tests (mocked).
+2. Live run 2026-11-04 (`muse-spark-1.3`): 14 calls, 0 errors,
+   15/15 outcomes, 14/14 syntax+containment, scoping verified
+   (incl. dosage refusal). Report under data/evaluation/live/.
+3. Relevance audit: English over-retrieval via shared livestock
+   terms documented; `can/used/use/using` stopwords added with
+   zero regressions; thresholds/embeddings rejected with evidence.
+   Darija retrieval exact; alfalfa exclusion verified live.
+4. Hygiene fix: Latin detection scoped to Arabic-script answers;
+   French-elision false positive fixed (L15 re-checked clean).
+5. Reviewer package: docs/20 seeded with verbatim live Darija
+   answers (R1/R2, both PENDING); docs/09 procedure added.
+6. Regression: 346 passed; 7/7 and 20/20 hold. No human, browser,
+   or ASR validation claimed. No commit/push.
 
 ## 0j. Milestone 6C work items — answer quality + grounding (done)
 

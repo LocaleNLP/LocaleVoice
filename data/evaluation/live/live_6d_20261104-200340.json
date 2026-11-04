@@ -1,0 +1,1886 @@
+{
+  "metadata": {
+    "cases_version": "m6d-live-1.0.0",
+    "provenance": "Controlled live-evaluation cases for Milestone 6D. Questions are authored (not farmer data); expected evidence documents intent. Live runs call the real Meta chat provider once per answerable case.",
+    "mode": "live",
+    "corpus_version": "m4d-1.0.0"
+  },
+  "summary": {
+    "total": 15,
+    "model_calls": 14,
+    "outcomes": {
+      "answer": 14,
+      "clarify": 0,
+      "abstain": 1,
+      "unsupported": 0,
+      "error": 0
+    },
+    "outcome_match": 15,
+    "syntax_ok": 14,
+    "syntax_failed": [],
+    "containment_ok": 14,
+    "containment_failed": [],
+    "hygiene_clean": 13,
+    "hygiene_flagged": [
+      "L15-darija-multi"
+    ],
+    "claim_support": "NOT MEASURED",
+    "human_naturalness": "NOT MEASURED",
+    "errors": 0
+  },
+  "cases": [
+    {
+      "case_id": "L01-wheat-nutrition",
+      "section": "A-relevant",
+      "question": "What are the nutritional characteristics of wheat grain for livestock?",
+      "language_inferred": "unknown (latin-script, uncertain)",
+      "intent": "agricultural_question",
+      "retrieved_ids": [
+        "feedipedia-cowpea-seeds",
+        "feedipedia-wheat-grain"
+      ],
+      "eligible_ids": [
+        "feedipedia-cowpea-seeds",
+        "feedipedia-wheat-grain"
+      ],
+      "supplied_ids": [
+        "feedipedia-cowpea-seeds",
+        "feedipedia-wheat-grain"
+      ],
+      "model_called": true,
+      "raw_response": "Wheat grain is used in ruminant diets as an energy source, can replace maize as a high-energy ingredient in concentrates, and requires less protein supplementation than maize due to its higher protein content [feedipedia-wheat-grain].\n\nIt is very palatable if not ground too finely [feedipedia-wheat-grain]. It is more rapidly, extensively and somewhat erratically fermented than other cereal grains [feedipedia-wheat-grain]. This can result in digestive problems such as bloat, laminitis and acidosis when too much grain is fed, when there are too many fines or when animals have been introduced too rapidly to the diet [feedipedia-wheat-grain].\n\nThe evidence does not provide specific nutrient values, inclusion levels, guidance for non-ruminants, or Moroccan regional guidance.\n\nFor safe inclusion rate, grinding and transition for your animals, ask a local veterinarian or agronomist.",
+      "parsed_citations": [
+        "feedipedia-wheat-grain",
+        "feedipedia-wheat-grain",
+        "feedipedia-wheat-grain",
+        "feedipedia-wheat-grain"
+      ],
+      "citation_syntax": {
+        "syntax_ok": true,
+        "malformed": []
+      },
+      "citation_containment": {
+        "contained": true,
+        "invalid": []
+      },
+      "hygiene": {
+        "latin_fragments": [],
+        "repeated_sentences": [],
+        "clean": true
+      },
+      "outcome": "answer",
+      "latency_ms": 19965,
+      "error": null,
+      "trace": {
+        "question": "What are the nutritional characteristics of wheat grain for livestock?",
+        "normalized_question": "what are the nutritional characteristics of wheat grain for livestock",
+        "detected_intent": "agricultural_question",
+        "detected_category": "Legumes",
+        "extracted_keywords": [
+          "nutritional",
+          "characteristics",
+          "wheat",
+          "grain",
+          "livestock"
+        ],
+        "documents_considered": {
+          "feedipedia-cowpea-seeds": {
+            "score": 2,
+            "matched": [
+              "grain",
+              "livestock"
+            ],
+            "selected": true,
+            "reason": "selected"
+          },
+          "feedipedia-olive-cake": {
+            "score": 0,
+            "matched": [],
+            "selected": false,
+            "reason": "no matched terms"
+          },
+          "feedipedia-wheat-grain": {
+            "score": 2,
+            "matched": [
+              "grain",
+              "wheat"
+            ],
+            "selected": true,
+            "reason": "selected"
+          },
+          "feedipedia-alfalfa": {
+            "score": 0,
+            "matched": [],
+            "selected": false,
+            "reason": "no matched terms"
+          }
+        },
+        "selected_evidence_ids": [
+          "feedipedia-cowpea-seeds",
+          "feedipedia-wheat-grain"
+        ],
+        "thresholds": {
+          "min_score": 1,
+          "top_k": 3
+        },
+        "sufficient_evidence": true,
+        "clarification_requested": false,
+        "model_called": true,
+        "model_id": "muse-spark-1.3",
+        "citation_check": {
+          "found": [
+            "feedipedia-wheat-grain",
+            "feedipedia-wheat-grain",
+            "feedipedia-wheat-grain",
+            "feedipedia-wheat-grain"
+          ],
+          "supplied": [
+            "feedipedia-cowpea-seeds",
+            "feedipedia-wheat-grain"
+          ],
+          "contained": true,
+          "invalid": [],
+          "malformed": [],
+          "syntax_ok": true
+        },
+        "status": "answered",
+        "error_type": null,
+        "hygiene": {
+          "latin_fragments": [],
+          "repeated_sentences": [],
+          "clean": true
+        }
+      },
+      "expected_outcome": "answer",
+      "outcome_match": true,
+      "claim_support": "NOT MEASURED",
+      "human_review": "PENDING"
+    },
+    {
+      "case_id": "L02-cowpea-feed",
+      "section": "A-relevant",
+      "question": "Are cowpea seeds a good animal feed?",
+      "language_inferred": "unknown (latin-script, uncertain)",
+      "intent": "agricultural_question",
+      "retrieved_ids": [
+        "feedipedia-cowpea-seeds",
+        "feedipedia-olive-cake"
+      ],
+      "eligible_ids": [
+        "feedipedia-cowpea-seeds",
+        "feedipedia-olive-cake"
+      ],
+      "supplied_ids": [
+        "feedipedia-cowpea-seeds",
+        "feedipedia-olive-cake"
+      ],
+      "model_called": true,
+      "raw_response": "Based on the evidence, cowpea seeds are only occasionally used to feed livestock [feedipedia-cowpea-seeds].\n\nThe source states that fresh or dried seeds, pods and leaves are commonly used as human food [feedipedia-cowpea-seeds]. Since they are highly valuable as food, cowpeas are only occasionally used to feed livestock, but the hay and silage can be an important fodder [feedipedia-cowpea-seeds].\n\nWhat the evidence does not cover: nutritional value, suitability for specific animals, inclusion levels, or processing for cowpea seeds, so it does not establish whether the seeds are good feed in nutritional terms.\n\nThis is general information only; for whether to use cowpea seeds for your animals, consult a local agronomist or veterinarian.",
+      "parsed_citations": [
+        "feedipedia-cowpea-seeds",
+        "feedipedia-cowpea-seeds",
+        "feedipedia-cowpea-seeds"
+      ],
+      "citation_syntax": {
+        "syntax_ok": true,
+        "malformed": []
+      },
+      "citation_containment": {
+        "contained": true,
+        "invalid": []
+      },
+      "hygiene": {
+        "latin_fragments": [],
+        "repeated_sentences": [],
+        "clean": true
+      },
+      "outcome": "answer",
+      "latency_ms": 19122,
+      "error": null,
+      "trace": {
+        "question": "Are cowpea seeds a good animal feed?",
+        "normalized_question": "are cowpea seeds a good animal feed",
+        "detected_intent": "agricultural_question",
+        "detected_category": "Legumes",
+        "extracted_keywords": [
+          "cowpea",
+          "seeds",
+          "good",
+          "animal",
+          "feed"
+        ],
+        "documents_considered": {
+          "feedipedia-cowpea-seeds": {
+            "score": 3,
+            "matched": [
+              "cowpea",
+              "feed",
+              "seeds"
+            ],
+            "selected": true,
+            "reason": "selected"
+          },
+          "feedipedia-olive-cake": {
+            "score": 1,
+            "matched": [
+              "feed"
+            ],
+            "selected": true,
+            "reason": "selected"
+          },
+          "feedipedia-wheat-grain": {
+            "score": 0,
+            "matched": [],
+            "selected": false,
+            "reason": "no matched terms"
+          },
+          "feedipedia-alfalfa": {
+            "score": 0,
+            "matched": [],
+            "selected": false,
+            "reason": "no matched terms"
+          }
+        },
+        "selected_evidence_ids": [
+          "feedipedia-cowpea-seeds",
+          "feedipedia-olive-cake"
+        ],
+        "thresholds": {
+          "min_score": 1,
+          "top_k": 3
+        },
+        "sufficient_evidence": true,
+        "clarification_requested": false,
+        "model_called": true,
+        "model_id": "muse-spark-1.3",
+        "citation_check": {
+          "found": [
+            "feedipedia-cowpea-seeds",
+            "feedipedia-cowpea-seeds",
+            "feedipedia-cowpea-seeds"
+          ],
+          "supplied": [
+            "feedipedia-cowpea-seeds",
+            "feedipedia-olive-cake"
+          ],
+          "contained": true,
+          "invalid": [],
+          "malformed": [],
+          "syntax_ok": true
+        },
+        "status": "answered",
+        "error_type": null,
+        "hygiene": {
+          "latin_fragments": [],
+          "repeated_sentences": [],
+          "clean": true
+        }
+      },
+      "expected_outcome": "answer",
+      "outcome_match": true,
+      "claim_support": "NOT MEASURED",
+      "human_review": "PENDING"
+    },
+    {
+      "case_id": "L03-olive-cake-feed",
+      "section": "A-relevant",
+      "question": "How is olive cake used as an animal feed?",
+      "language_inferred": "unknown (latin-script, uncertain)",
+      "intent": "agricultural_question",
+      "retrieved_ids": [
+        "feedipedia-olive-cake",
+        "feedipedia-cowpea-seeds"
+      ],
+      "eligible_ids": [
+        "feedipedia-olive-cake",
+        "feedipedia-cowpea-seeds"
+      ],
+      "supplied_ids": [
+        "feedipedia-olive-cake",
+        "feedipedia-cowpea-seeds"
+      ],
+      "model_called": true,
+      "raw_response": "1. Direct answer\nOlive cake from olive oil extraction is used as a roughage feed for ruminants including cattle, sheep, goats and camels, and it can be fed fresh, ensiled, dried, included in pellets or in multi-nutrient blocks [feedipedia-olive-cake].\n\n2. Explanation from the evidence\nOlive oil extraction by-products used for feeding include cakes and pomaces from extraction and leaves and other residues from cleaning [feedipedia-olive-cake]. Olive cake is not very palatable to ruminants [feedipedia-olive-cake]. Due to high lignin content, low crude protein content and poor digestibility, it may be compared to roughage and is well accepted by ruminants [feedipedia-olive-cake]. Adding molasses to olive oil cake can improve palatability, and blending with other feeds may be recommended [feedipedia-olive-cake]. For fattening lambs, 40% inclusion is recommended [feedipedia-olive-cake].\n\n3. What the evidence does not cover\nThe evidence does not give inclusion rates except 40% for fattening lambs, does not give processing or storage details beyond the listed forms, and contains no Morocco-specific regional guidance.\n\n4. Practical next step\nThe evidence supports blending to improve intake, for example adding molasses, using one of the listed forms, and using 40% inclusion for fattening lambs [feedipedia-olive-cake]. For exact rations for other animals or your farm, a local agronomist or veterinarian should decide.\nThis is general information, not a specific ration prescription.",
+      "parsed_citations": [
+        "feedipedia-olive-cake",
+        "feedipedia-olive-cake",
+        "feedipedia-olive-cake",
+        "feedipedia-olive-cake",
+        "feedipedia-olive-cake",
+        "feedipedia-olive-cake",
+        "feedipedia-olive-cake"
+      ],
+      "citation_syntax": {
+        "syntax_ok": true,
+        "malformed": []
+      },
+      "citation_containment": {
+        "contained": true,
+        "invalid": []
+      },
+      "hygiene": {
+        "latin_fragments": [],
+        "repeated_sentences": [],
+        "clean": true
+      },
+      "outcome": "answer",
+      "latency_ms": 28249,
+      "error": null,
+      "trace": {
+        "question": "How is olive cake used as an animal feed?",
+        "normalized_question": "how is olive cake used as an animal feed",
+        "detected_intent": "agricultural_question",
+        "detected_category": "Feed by-products",
+        "extracted_keywords": [
+          "how",
+          "olive",
+          "cake",
+          "animal",
+          "feed"
+        ],
+        "documents_considered": {
+          "feedipedia-cowpea-seeds": {
+            "score": 1,
+            "matched": [
+              "feed"
+            ],
+            "selected": true,
+            "reason": "selected"
+          },
+          "feedipedia-olive-cake": {
+            "score": 3,
+            "matched": [
+              "cake",
+              "feed",
+              "olive"
+            ],
+            "selected": true,
+            "reason": "selected"
+          },
+          "feedipedia-wheat-grain": {
+            "score": 0,
+            "matched": [],
+            "selected": false,
+            "reason": "no matched terms"
+          },
+          "feedipedia-alfalfa": {
+            "score": 0,
+            "matched": [],
+            "selected": false,
+            "reason": "no matched terms"
+          }
+        },
+        "selected_evidence_ids": [
+          "feedipedia-olive-cake",
+          "feedipedia-cowpea-seeds"
+        ],
+        "thresholds": {
+          "min_score": 1,
+          "top_k": 3
+        },
+        "sufficient_evidence": true,
+        "clarification_requested": false,
+        "model_called": true,
+        "model_id": "muse-spark-1.3",
+        "citation_check": {
+          "found": [
+            "feedipedia-olive-cake",
+            "feedipedia-olive-cake",
+            "feedipedia-olive-cake",
+            "feedipedia-olive-cake",
+            "feedipedia-olive-cake",
+            "feedipedia-olive-cake",
+            "feedipedia-olive-cake"
+          ],
+          "supplied": [
+            "feedipedia-olive-cake",
+            "feedipedia-cowpea-seeds"
+          ],
+          "contained": true,
+          "invalid": [],
+          "malformed": [],
+          "syntax_ok": true
+        },
+        "status": "answered",
+        "error_type": null,
+        "hygiene": {
+          "latin_fragments": [],
+          "repeated_sentences": [],
+          "clean": true
+        }
+      },
+      "expected_outcome": "answer",
+      "outcome_match": true,
+      "claim_support": "NOT MEASURED",
+      "human_review": "PENDING"
+    },
+    {
+      "case_id": "L04-wheat-with-olive-present",
+      "section": "B-irrelevant",
+      "question": "Is wheat grain good feed for cattle and sheep?",
+      "language_inferred": "unknown (latin-script, uncertain)",
+      "intent": "agricultural_question",
+      "retrieved_ids": [
+        "feedipedia-olive-cake",
+        "feedipedia-cowpea-seeds",
+        "feedipedia-wheat-grain"
+      ],
+      "eligible_ids": [
+        "feedipedia-olive-cake",
+        "feedipedia-cowpea-seeds",
+        "feedipedia-wheat-grain"
+      ],
+      "supplied_ids": [
+        "feedipedia-olive-cake",
+        "feedipedia-cowpea-seeds",
+        "feedipedia-wheat-grain"
+      ],
+      "model_called": true,
+      "raw_response": "Direct answer:\nYes, with caution — wheat is used in ruminant diets as an energy source [feedipedia-wheat-grain], but it can cause bloat, laminitis and acidosis when mismanaged [feedipedia-wheat-grain].\n\nExplanation from the evidence:\nIt can replace maize as a high-energy ingredient in concentrates, with the benefit that it requires less protein supplementation than maize due to its higher protein content [feedipedia-wheat-grain].\nIt is very palatable if not ground too finely [feedipedia-wheat-grain].\nIt is more rapidly, extensively, and somewhat erratically fermented than other cereal grains [feedipedia-wheat-grain].\nDigestive problems such as bloat, laminitis and acidosis can result when too much grain is fed, when there are too many fines or when animals have been introduced too rapidly to the diet [feedipedia-wheat-grain].\n\nWhat the evidence does not cover:\nThe passage says ruminants without separate details for cattle versus sheep, and it gives no inclusion amount, grind size, or adaptation schedule, and no Moroccan regional guidance.\n\nNext step:\nThe source does not support a specific amount for your animals, so a qualified local agronomist or veterinarian must decide, with details on animal species, age, production stage and current diet.\nThis is general information only, not specific advice for your herd.",
+      "parsed_citations": [
+        "feedipedia-wheat-grain",
+        "feedipedia-wheat-grain",
+        "feedipedia-wheat-grain",
+        "feedipedia-wheat-grain",
+        "feedipedia-wheat-grain",
+        "feedipedia-wheat-grain"
+      ],
+      "citation_syntax": {
+        "syntax_ok": true,
+        "malformed": []
+      },
+      "citation_containment": {
+        "contained": true,
+        "invalid": []
+      },
+      "hygiene": {
+        "latin_fragments": [],
+        "repeated_sentences": [],
+        "clean": true
+      },
+      "outcome": "answer",
+      "latency_ms": 23776,
+      "error": null,
+      "trace": {
+        "question": "Is wheat grain good feed for cattle and sheep?",
+        "normalized_question": "is wheat grain good feed for cattle and sheep",
+        "detected_intent": "agricultural_question",
+        "detected_category": "Feed by-products",
+        "extracted_keywords": [
+          "wheat",
+          "grain",
+          "good",
+          "feed",
+          "cattle",
+          "sheep"
+        ],
+        "documents_considered": {
+          "feedipedia-cowpea-seeds": {
+            "score": 2,
+            "matched": [
+              "feed",
+              "grain"
+            ],
+            "selected": true,
+            "reason": "selected"
+          },
+          "feedipedia-olive-cake": {
+            "score": 3,
+            "matched": [
+              "cattle",
+              "feed",
+              "sheep"
+            ],
+            "selected": true,
+            "reason": "selected"
+          },
+          "feedipedia-wheat-grain": {
+            "score": 2,
+            "matched": [
+              "grain",
+              "wheat"
+            ],
+            "selected": true,
+            "reason": "selected"
+          },
+          "feedipedia-alfalfa": {
+            "score": 1,
+            "matched": [
+              "cattle"
+            ],
+            "selected": false,
+            "reason": "excluded: review_status=pending-review (not farmer-facing eligible)"
+          }
+        },
+        "selected_evidence_ids": [
+          "feedipedia-olive-cake",
+          "feedipedia-cowpea-seeds",
+          "feedipedia-wheat-grain"
+        ],
+        "thresholds": {
+          "min_score": 1,
+          "top_k": 3
+        },
+        "sufficient_evidence": true,
+        "clarification_requested": false,
+        "model_called": true,
+        "model_id": "muse-spark-1.3",
+        "citation_check": {
+          "found": [
+            "feedipedia-wheat-grain",
+            "feedipedia-wheat-grain",
+            "feedipedia-wheat-grain",
+            "feedipedia-wheat-grain",
+            "feedipedia-wheat-grain",
+            "feedipedia-wheat-grain"
+          ],
+          "supplied": [
+            "feedipedia-olive-cake",
+            "feedipedia-cowpea-seeds",
+            "feedipedia-wheat-grain"
+          ],
+          "contained": true,
+          "invalid": [],
+          "malformed": [],
+          "syntax_ok": true
+        },
+        "status": "answered",
+        "error_type": null,
+        "hygiene": {
+          "latin_fragments": [],
+          "repeated_sentences": [],
+          "clean": true
+        }
+      },
+      "expected_outcome": "scoped",
+      "outcome_match": true,
+      "claim_support": "NOT MEASURED",
+      "human_review": "PENDING"
+    },
+    {
+      "case_id": "L05-olive-with-wheat-present",
+      "section": "B-irrelevant",
+      "question": "Can olive cake replace grain for sheep energy?",
+      "language_inferred": "unknown (latin-script, uncertain)",
+      "intent": "agricultural_question",
+      "retrieved_ids": [
+        "feedipedia-olive-cake",
+        "feedipedia-wheat-grain",
+        "feedipedia-cowpea-seeds"
+      ],
+      "eligible_ids": [
+        "feedipedia-olive-cake",
+        "feedipedia-wheat-grain",
+        "feedipedia-cowpea-seeds"
+      ],
+      "supplied_ids": [
+        "feedipedia-olive-cake",
+        "feedipedia-wheat-grain",
+        "feedipedia-cowpea-seeds"
+      ],
+      "model_called": true,
+      "raw_response": "Direct answer:\nNo, the evidence describes different feed roles and does not support direct energy replacement [feedipedia-olive-cake] [feedipedia-wheat-grain].\n\nExplanation from the evidence:\nOlive oil cake may be compared to roughage due to its high lignin content, low crude protein content and poor digestibility [feedipedia-olive-cake]. Olive cake is not very palatable to ruminants, but is well accepted by ruminants including sheep, and adding molasses can improve palatability [feedipedia-olive-cake]. It can be fed fresh, ensiled, dried, included in pellets or multi-nutrient blocks [feedipedia-olive-cake]. The source states 40% inclusion is recommended in fattening lambs [feedipedia-olive-cake]. By contrast, wheat is used in ruminant diets as an energy source and can replace maize as a high-energy ingredient in concentrates [feedipedia-wheat-grain].\n\nWhat the evidence does not cover:\nEnergy values, a complete olive-cake-for-grain exchange rate, sheep classes other than fattening lambs for that 40% rate, grains other than wheat and maize, and any Moroccan regional guidance.\n\nNext step:\nThe source supports only blending, molasses for palatability, those feeding forms, and the 40% rate for fattening lambs [feedipedia-olive-cake], so ask a local agronomist or veterinarian to decide energy replacement for your flock and provide sheep type, age, current grain and feeding level.",
+      "parsed_citations": [
+        "feedipedia-olive-cake",
+        "feedipedia-wheat-grain",
+        "feedipedia-olive-cake",
+        "feedipedia-olive-cake",
+        "feedipedia-olive-cake",
+        "feedipedia-olive-cake",
+        "feedipedia-wheat-grain",
+        "feedipedia-olive-cake"
+      ],
+      "citation_syntax": {
+        "syntax_ok": true,
+        "malformed": []
+      },
+      "citation_containment": {
+        "contained": true,
+        "invalid": []
+      },
+      "hygiene": {
+        "latin_fragments": [],
+        "repeated_sentences": [],
+        "clean": true
+      },
+      "outcome": "answer",
+      "latency_ms": 46036,
+      "error": null,
+      "trace": {
+        "question": "Can olive cake replace grain for sheep energy?",
+        "normalized_question": "can olive cake replace grain for sheep energy",
+        "detected_intent": "agricultural_question",
+        "detected_category": "Feed by-products",
+        "extracted_keywords": [
+          "olive",
+          "cake",
+          "replace",
+          "grain",
+          "sheep",
+          "energy"
+        ],
+        "documents_considered": {
+          "feedipedia-cowpea-seeds": {
+            "score": 1,
+            "matched": [
+              "grain"
+            ],
+            "selected": true,
+            "reason": "selected"
+          },
+          "feedipedia-olive-cake": {
+            "score": 3,
+            "matched": [
+              "cake",
+              "olive",
+              "sheep"
+            ],
+            "selected": true,
+            "reason": "selected"
+          },
+          "feedipedia-wheat-grain": {
+            "score": 3,
+            "matched": [
+              "energy",
+              "grain",
+              "replace"
+            ],
+            "selected": true,
+            "reason": "selected"
+          },
+          "feedipedia-alfalfa": {
+            "score": 0,
+            "matched": [],
+            "selected": false,
+            "reason": "no matched terms"
+          }
+        },
+        "selected_evidence_ids": [
+          "feedipedia-olive-cake",
+          "feedipedia-wheat-grain",
+          "feedipedia-cowpea-seeds"
+        ],
+        "thresholds": {
+          "min_score": 1,
+          "top_k": 3
+        },
+        "sufficient_evidence": true,
+        "clarification_requested": false,
+        "model_called": true,
+        "model_id": "muse-spark-1.3",
+        "citation_check": {
+          "found": [
+            "feedipedia-olive-cake",
+            "feedipedia-wheat-grain",
+            "feedipedia-olive-cake",
+            "feedipedia-olive-cake",
+            "feedipedia-olive-cake",
+            "feedipedia-olive-cake",
+            "feedipedia-wheat-grain",
+            "feedipedia-olive-cake"
+          ],
+          "supplied": [
+            "feedipedia-olive-cake",
+            "feedipedia-wheat-grain",
+            "feedipedia-cowpea-seeds"
+          ],
+          "contained": true,
+          "invalid": [],
+          "malformed": [],
+          "syntax_ok": true
+        },
+        "status": "answered",
+        "error_type": null,
+        "hygiene": {
+          "latin_fragments": [],
+          "repeated_sentences": [],
+          "clean": true
+        }
+      },
+      "expected_outcome": "scoped",
+      "outcome_match": true,
+      "claim_support": "NOT MEASURED",
+      "human_review": "PENDING"
+    },
+    {
+      "case_id": "L06-tomato-no-evidence",
+      "section": "B-irrelevant",
+      "question": "How do I cultivate tomatoes for market?",
+      "language_inferred": "unknown (latin-script, uncertain)",
+      "intent": "unclear",
+      "retrieved_ids": [],
+      "eligible_ids": [],
+      "supplied_ids": [],
+      "model_called": false,
+      "raw_response": "I could not find relevant evidence for this question in the available reference material, so I will not guess an answer. Try rephrasing with the crop or animal name (for example: wheat/القمح/blé, olive cake, cowpea), or ask your local agricultural advisor.",
+      "parsed_citations": [],
+      "citation_syntax": {
+        "syntax_ok": null,
+        "malformed": []
+      },
+      "citation_containment": {
+        "contained": null,
+        "invalid": []
+      },
+      "hygiene": {},
+      "outcome": "abstain",
+      "latency_ms": null,
+      "error": null,
+      "trace": {
+        "question": "How do I cultivate tomatoes for market?",
+        "normalized_question": "how do i cultivate tomatoes for market",
+        "detected_intent": "unclear",
+        "detected_category": null,
+        "extracted_keywords": [
+          "how",
+          "do",
+          "cultivate",
+          "tomatoes",
+          "market"
+        ],
+        "documents_considered": {
+          "feedipedia-cowpea-seeds": {
+            "score": 0,
+            "matched": [],
+            "selected": false,
+            "reason": "no matched terms"
+          },
+          "feedipedia-olive-cake": {
+            "score": 0,
+            "matched": [],
+            "selected": false,
+            "reason": "no matched terms"
+          },
+          "feedipedia-wheat-grain": {
+            "score": 0,
+            "matched": [],
+            "selected": false,
+            "reason": "no matched terms"
+          },
+          "feedipedia-alfalfa": {
+            "score": 0,
+            "matched": [],
+            "selected": false,
+            "reason": "no matched terms"
+          }
+        },
+        "selected_evidence_ids": [],
+        "thresholds": {
+          "min_score": 1,
+          "top_k": 3
+        },
+        "sufficient_evidence": false,
+        "clarification_requested": false,
+        "model_called": false,
+        "model_id": null,
+        "citation_check": null,
+        "status": "insufficient",
+        "error_type": null,
+        "hygiene": null
+      },
+      "expected_outcome": "abstain",
+      "outcome_match": true,
+      "claim_support": "NOT MEASURED",
+      "human_review": "PENDING"
+    },
+    {
+      "case_id": "L07-soil-region",
+      "section": "C-insufficient",
+      "question": "What is the best soil type for wheat in the Sais region?",
+      "language_inferred": "unknown (latin-script, uncertain)",
+      "intent": "agricultural_question",
+      "retrieved_ids": [
+        "feedipedia-wheat-grain"
+      ],
+      "eligible_ids": [
+        "feedipedia-wheat-grain"
+      ],
+      "supplied_ids": [
+        "feedipedia-wheat-grain"
+      ],
+      "model_called": true,
+      "raw_response": "The supplied evidence does not provide an answer.\n\nIt contains no soil information and no regional guidance.\n\nWhat is not covered and remains unknown from this evidence: best soil type, and any Sais-specific conditions.\n\nFor site-specific soil advice, please consult a local agronomist.",
+      "parsed_citations": [],
+      "citation_syntax": {
+        "syntax_ok": true,
+        "malformed": []
+      },
+      "citation_containment": {
+        "contained": true,
+        "invalid": []
+      },
+      "hygiene": {
+        "latin_fragments": [],
+        "repeated_sentences": [],
+        "clean": true
+      },
+      "outcome": "answer",
+      "latency_ms": 20121,
+      "error": null,
+      "trace": {
+        "question": "What is the best soil type for wheat in the Sais region?",
+        "normalized_question": "what is the best soil type for wheat in the sais region",
+        "detected_intent": "agricultural_question",
+        "detected_category": "Cereals",
+        "extracted_keywords": [
+          "best",
+          "soil",
+          "type",
+          "wheat",
+          "sais",
+          "region"
+        ],
+        "documents_considered": {
+          "feedipedia-cowpea-seeds": {
+            "score": 0,
+            "matched": [],
+            "selected": false,
+            "reason": "no matched terms"
+          },
+          "feedipedia-olive-cake": {
+            "score": 0,
+            "matched": [],
+            "selected": false,
+            "reason": "no matched terms"
+          },
+          "feedipedia-wheat-grain": {
+            "score": 1,
+            "matched": [
+              "wheat"
+            ],
+            "selected": true,
+            "reason": "selected"
+          },
+          "feedipedia-alfalfa": {
+            "score": 0,
+            "matched": [],
+            "selected": false,
+            "reason": "no matched terms"
+          }
+        },
+        "selected_evidence_ids": [
+          "feedipedia-wheat-grain"
+        ],
+        "thresholds": {
+          "min_score": 1,
+          "top_k": 3
+        },
+        "sufficient_evidence": true,
+        "clarification_requested": false,
+        "model_called": true,
+        "model_id": "muse-spark-1.3",
+        "citation_check": {
+          "found": [],
+          "supplied": [
+            "feedipedia-wheat-grain"
+          ],
+          "contained": true,
+          "invalid": [],
+          "malformed": [],
+          "syntax_ok": true
+        },
+        "status": "answered",
+        "error_type": null,
+        "hygiene": {
+          "latin_fragments": [],
+          "repeated_sentences": [],
+          "clean": true
+        }
+      },
+      "expected_outcome": "scoped",
+      "outcome_match": true,
+      "claim_support": "NOT MEASURED",
+      "human_review": "PENDING"
+    },
+    {
+      "case_id": "L08-climate",
+      "section": "C-insufficient",
+      "question": "What climate is best for growing wheat in Morocco?",
+      "language_inferred": "unknown (latin-script, uncertain)",
+      "intent": "agricultural_question",
+      "retrieved_ids": [
+        "feedipedia-wheat-grain"
+      ],
+      "eligible_ids": [
+        "feedipedia-wheat-grain"
+      ],
+      "supplied_ids": [
+        "feedipedia-wheat-grain"
+      ],
+      "model_called": true,
+      "raw_response": "The provided evidence does not state an answer.\n\nIt addresses wheat as feed [feedipedia-wheat-grain] and contains no growing-climate or Moroccan regional guidance.\n\nClimate requirements, suitable zones, soils and seasons are not covered and remain unknown from this evidence.\n\nFor this location-specific decision, consult a local agronomist.\n\nThis is general information only.",
+      "parsed_citations": [
+        "feedipedia-wheat-grain"
+      ],
+      "citation_syntax": {
+        "syntax_ok": true,
+        "malformed": []
+      },
+      "citation_containment": {
+        "contained": true,
+        "invalid": []
+      },
+      "hygiene": {
+        "latin_fragments": [],
+        "repeated_sentences": [],
+        "clean": true
+      },
+      "outcome": "answer",
+      "latency_ms": 22559,
+      "error": null,
+      "trace": {
+        "question": "What climate is best for growing wheat in Morocco?",
+        "normalized_question": "what climate is best for growing wheat in morocco",
+        "detected_intent": "agricultural_question",
+        "detected_category": "Cereals",
+        "extracted_keywords": [
+          "climate",
+          "best",
+          "growing",
+          "wheat",
+          "morocco"
+        ],
+        "documents_considered": {
+          "feedipedia-cowpea-seeds": {
+            "score": 0,
+            "matched": [],
+            "selected": false,
+            "reason": "no matched terms"
+          },
+          "feedipedia-olive-cake": {
+            "score": 0,
+            "matched": [],
+            "selected": false,
+            "reason": "no matched terms"
+          },
+          "feedipedia-wheat-grain": {
+            "score": 1,
+            "matched": [
+              "wheat"
+            ],
+            "selected": true,
+            "reason": "selected"
+          },
+          "feedipedia-alfalfa": {
+            "score": 0,
+            "matched": [],
+            "selected": false,
+            "reason": "no matched terms"
+          }
+        },
+        "selected_evidence_ids": [
+          "feedipedia-wheat-grain"
+        ],
+        "thresholds": {
+          "min_score": 1,
+          "top_k": 3
+        },
+        "sufficient_evidence": true,
+        "clarification_requested": false,
+        "model_called": true,
+        "model_id": "muse-spark-1.3",
+        "citation_check": {
+          "found": [
+            "feedipedia-wheat-grain"
+          ],
+          "supplied": [
+            "feedipedia-wheat-grain"
+          ],
+          "contained": true,
+          "invalid": [],
+          "malformed": [],
+          "syntax_ok": true
+        },
+        "status": "answered",
+        "error_type": null,
+        "hygiene": {
+          "latin_fragments": [],
+          "repeated_sentences": [],
+          "clean": true
+        }
+      },
+      "expected_outcome": "scoped",
+      "outcome_match": true,
+      "claim_support": "NOT MEASURED",
+      "human_review": "PENDING"
+    },
+    {
+      "case_id": "L09-pesticide-dosage",
+      "section": "C-insufficient",
+      "question": "What pesticide dosage should I spray on wheat for aphids?",
+      "language_inferred": "unknown (latin-script, uncertain)",
+      "intent": "agricultural_question",
+      "retrieved_ids": [
+        "feedipedia-wheat-grain"
+      ],
+      "eligible_ids": [
+        "feedipedia-wheat-grain"
+      ],
+      "supplied_ids": [
+        "feedipedia-wheat-grain"
+      ],
+      "model_called": true,
+      "raw_response": "I cannot provide a dosage from the provided evidence.\n\nThe provided evidence contains no pesticide information.\n\nIt does not cover product choice, dosage, aphids, safety, or Moroccan regional guidance.\n\nA qualified local agronomist or plant protection specialist must decide.\nThis reflects only the limits of the provided evidence.",
+      "parsed_citations": [],
+      "citation_syntax": {
+        "syntax_ok": true,
+        "malformed": []
+      },
+      "citation_containment": {
+        "contained": true,
+        "invalid": []
+      },
+      "hygiene": {
+        "latin_fragments": [],
+        "repeated_sentences": [],
+        "clean": true
+      },
+      "outcome": "answer",
+      "latency_ms": 24718,
+      "error": null,
+      "trace": {
+        "question": "What pesticide dosage should I spray on wheat for aphids?",
+        "normalized_question": "what pesticide dosage should i spray on wheat for aphids",
+        "detected_intent": "agricultural_question",
+        "detected_category": "Cereals",
+        "extracted_keywords": [
+          "pesticide",
+          "dosage",
+          "should",
+          "spray",
+          "wheat",
+          "aphids"
+        ],
+        "documents_considered": {
+          "feedipedia-cowpea-seeds": {
+            "score": 0,
+            "matched": [],
+            "selected": false,
+            "reason": "no matched terms"
+          },
+          "feedipedia-olive-cake": {
+            "score": 0,
+            "matched": [],
+            "selected": false,
+            "reason": "no matched terms"
+          },
+          "feedipedia-wheat-grain": {
+            "score": 1,
+            "matched": [
+              "wheat"
+            ],
+            "selected": true,
+            "reason": "selected"
+          },
+          "feedipedia-alfalfa": {
+            "score": 0,
+            "matched": [],
+            "selected": false,
+            "reason": "no matched terms"
+          }
+        },
+        "selected_evidence_ids": [
+          "feedipedia-wheat-grain"
+        ],
+        "thresholds": {
+          "min_score": 1,
+          "top_k": 3
+        },
+        "sufficient_evidence": true,
+        "clarification_requested": false,
+        "model_called": true,
+        "model_id": "muse-spark-1.3",
+        "citation_check": {
+          "found": [],
+          "supplied": [
+            "feedipedia-wheat-grain"
+          ],
+          "contained": true,
+          "invalid": [],
+          "malformed": [],
+          "syntax_ok": true
+        },
+        "status": "answered",
+        "error_type": null,
+        "hygiene": {
+          "latin_fragments": [],
+          "repeated_sentences": [],
+          "clean": true
+        }
+      },
+      "expected_outcome": "scoped",
+      "outcome_match": true,
+      "claim_support": "NOT MEASURED",
+      "human_review": "PENDING"
+    },
+    {
+      "case_id": "L10-multi-feed-soil",
+      "section": "D-multi-part",
+      "question": "Is wheat good for cattle, and what soil does it need?",
+      "language_inferred": "unknown (latin-script, uncertain)",
+      "intent": "agricultural_question",
+      "retrieved_ids": [
+        "feedipedia-alfalfa",
+        "feedipedia-olive-cake",
+        "feedipedia-wheat-grain"
+      ],
+      "eligible_ids": [
+        "feedipedia-olive-cake",
+        "feedipedia-wheat-grain"
+      ],
+      "supplied_ids": [
+        "feedipedia-olive-cake",
+        "feedipedia-wheat-grain"
+      ],
+      "model_called": true,
+      "raw_response": "Wheat grain can be used for cattle as an energy source, but it carries digestive risks, and the evidence gives no information on soil needs.\n\nFor cattle: Wheat is used in ruminant diets as an energy source [feedipedia-wheat-grain]. It can replace maize as a high-energy ingredient in concentrates, with the additional benefit that it requires less protein supplementation than maize due to its higher protein content [feedipedia-wheat-grain]. Wheat is very palatable if not ground too finely [feedipedia-wheat-grain]. Wheat is more rapidly, extensively, and somewhat erratically fermented than other cereal grains [feedipedia-wheat-grain]. This can result in digestive problems such as bloat, laminitis and acidosis when too much grain is fed, when there are too many fines or when animals have been introduced too rapidly to the diet [feedipedia-wheat-grain].\n\nWhat the evidence does not cover: soil requirements for growing wheat, safe amounts to feed, and any Morocco-specific guidance.\n\nFor exact feeding amounts and for soil choice, ask a local agronomist or veterinarian.",
+      "parsed_citations": [
+        "feedipedia-wheat-grain",
+        "feedipedia-wheat-grain",
+        "feedipedia-wheat-grain",
+        "feedipedia-wheat-grain",
+        "feedipedia-wheat-grain"
+      ],
+      "citation_syntax": {
+        "syntax_ok": true,
+        "malformed": []
+      },
+      "citation_containment": {
+        "contained": true,
+        "invalid": []
+      },
+      "hygiene": {
+        "latin_fragments": [],
+        "repeated_sentences": [],
+        "clean": true
+      },
+      "outcome": "answer",
+      "latency_ms": 19428,
+      "error": null,
+      "trace": {
+        "question": "Is wheat good for cattle, and what soil does it need?",
+        "normalized_question": "is wheat good for cattle and what soil does it need",
+        "detected_intent": "agricultural_question",
+        "detected_category": "Feed by-products",
+        "extracted_keywords": [
+          "wheat",
+          "good",
+          "cattle",
+          "soil",
+          "does",
+          "need"
+        ],
+        "documents_considered": {
+          "feedipedia-cowpea-seeds": {
+            "score": 0,
+            "matched": [],
+            "selected": false,
+            "reason": "no matched terms"
+          },
+          "feedipedia-olive-cake": {
+            "score": 1,
+            "matched": [
+              "cattle"
+            ],
+            "selected": true,
+            "reason": "selected"
+          },
+          "feedipedia-wheat-grain": {
+            "score": 1,
+            "matched": [
+              "wheat"
+            ],
+            "selected": true,
+            "reason": "selected"
+          },
+          "feedipedia-alfalfa": {
+            "score": 1,
+            "matched": [
+              "cattle"
+            ],
+            "selected": false,
+            "reason": "excluded: review_status=pending-review (not farmer-facing eligible)"
+          }
+        },
+        "selected_evidence_ids": [
+          "feedipedia-olive-cake",
+          "feedipedia-wheat-grain"
+        ],
+        "thresholds": {
+          "min_score": 1,
+          "top_k": 3
+        },
+        "sufficient_evidence": true,
+        "clarification_requested": false,
+        "model_called": true,
+        "model_id": "muse-spark-1.3",
+        "citation_check": {
+          "found": [
+            "feedipedia-wheat-grain",
+            "feedipedia-wheat-grain",
+            "feedipedia-wheat-grain",
+            "feedipedia-wheat-grain",
+            "feedipedia-wheat-grain"
+          ],
+          "supplied": [
+            "feedipedia-olive-cake",
+            "feedipedia-wheat-grain"
+          ],
+          "contained": true,
+          "invalid": [],
+          "malformed": [],
+          "syntax_ok": true
+        },
+        "status": "answered",
+        "error_type": null,
+        "hygiene": {
+          "latin_fragments": [],
+          "repeated_sentences": [],
+          "clean": true
+        }
+      },
+      "expected_outcome": "scoped",
+      "outcome_match": true,
+      "claim_support": "NOT MEASURED",
+      "human_review": "PENDING"
+    },
+    {
+      "case_id": "L11-multi-olive-planting",
+      "section": "D-multi-part",
+      "question": "Is olive cake good for sheep, and when should I plant barley in my area?",
+      "language_inferred": "unknown (latin-script, uncertain)",
+      "intent": "agricultural_question",
+      "retrieved_ids": [
+        "feedipedia-olive-cake"
+      ],
+      "eligible_ids": [
+        "feedipedia-olive-cake"
+      ],
+      "supplied_ids": [
+        "feedipedia-olive-cake"
+      ],
+      "model_called": true,
+      "raw_response": "Direct answer:\n- For sheep: the source says olive cake can be used as feed and is well accepted by sheep [feedipedia-olive-cake].\n- For barley planting time in your area: the evidence does not answer this.\n\nExplanation from the evidence:\n- Olive oil extraction by-products including cakes and pomaces can be used to feed animals [feedipedia-olive-cake].\n- Olive cake is not very palatable to ruminants [feedipedia-olive-cake].\n- Due to high lignin content, low crude protein content and poor digestibility, it may be compared to roughage [feedipedia-olive-cake].\n- It is well accepted by ruminants including cattle, sheep, goats and camels [feedipedia-olive-cake].\n- It can be fed fresh, ensiled, dried, included in pellets or multi-nutrient blocks [feedipedia-olive-cake].\n- Blending with other feeds is suggested, and adding molasses can improve palatability [feedipedia-olive-cake].\n- In fattening lambs, 40% inclusion is recommended [feedipedia-olive-cake].\n\nWhat the evidence does not cover:\n- Barley planting date, and any regional, soil, climate or farm-specific guidance for your area. The passage contains no regional guidance.\n- Whether olive cake is \"good\" for your own sheep in terms of performance or health, beyond the properties stated above.\n\nNext step:\n- For olive cake use, the source supports considering the listed forms and molasses for palatability, and the 40% inclusion for fattening lambs [feedipedia-olive-cake].\n- For barley planting time, ask a local agronomist with your location and season, as the evidence provides no basis for this decision.\n\nThis is general information from the source, not specific advice for your farm.",
+      "parsed_citations": [
+        "feedipedia-olive-cake",
+        "feedipedia-olive-cake",
+        "feedipedia-olive-cake",
+        "feedipedia-olive-cake",
+        "feedipedia-olive-cake",
+        "feedipedia-olive-cake",
+        "feedipedia-olive-cake",
+        "feedipedia-olive-cake",
+        "feedipedia-olive-cake"
+      ],
+      "citation_syntax": {
+        "syntax_ok": true,
+        "malformed": []
+      },
+      "citation_containment": {
+        "contained": true,
+        "invalid": []
+      },
+      "hygiene": {
+        "latin_fragments": [],
+        "repeated_sentences": [],
+        "clean": true
+      },
+      "outcome": "answer",
+      "latency_ms": 24886,
+      "error": null,
+      "trace": {
+        "question": "Is olive cake good for sheep, and when should I plant barley in my area?",
+        "normalized_question": "is olive cake good for sheep and when should i plant barley in my area",
+        "detected_intent": "agricultural_question",
+        "detected_category": "Feed by-products",
+        "extracted_keywords": [
+          "olive",
+          "cake",
+          "good",
+          "sheep",
+          "should",
+          "plant",
+          "barley",
+          "my",
+          "area"
+        ],
+        "documents_considered": {
+          "feedipedia-cowpea-seeds": {
+            "score": 0,
+            "matched": [],
+            "selected": false,
+            "reason": "no matched terms"
+          },
+          "feedipedia-olive-cake": {
+            "score": 3,
+            "matched": [
+              "cake",
+              "olive",
+              "sheep"
+            ],
+            "selected": true,
+            "reason": "selected"
+          },
+          "feedipedia-wheat-grain": {
+            "score": 0,
+            "matched": [],
+            "selected": false,
+            "reason": "no matched terms"
+          },
+          "feedipedia-alfalfa": {
+            "score": 0,
+            "matched": [],
+            "selected": false,
+            "reason": "no matched terms"
+          }
+        },
+        "selected_evidence_ids": [
+          "feedipedia-olive-cake"
+        ],
+        "thresholds": {
+          "min_score": 1,
+          "top_k": 3
+        },
+        "sufficient_evidence": true,
+        "clarification_requested": false,
+        "model_called": true,
+        "model_id": "muse-spark-1.3",
+        "citation_check": {
+          "found": [
+            "feedipedia-olive-cake",
+            "feedipedia-olive-cake",
+            "feedipedia-olive-cake",
+            "feedipedia-olive-cake",
+            "feedipedia-olive-cake",
+            "feedipedia-olive-cake",
+            "feedipedia-olive-cake",
+            "feedipedia-olive-cake",
+            "feedipedia-olive-cake"
+          ],
+          "supplied": [
+            "feedipedia-olive-cake"
+          ],
+          "contained": true,
+          "invalid": [],
+          "malformed": [],
+          "syntax_ok": true
+        },
+        "status": "answered",
+        "error_type": null,
+        "hygiene": {
+          "latin_fragments": [],
+          "repeated_sentences": [],
+          "clean": true
+        }
+      },
+      "expected_outcome": "scoped",
+      "outcome_match": true,
+      "claim_support": "NOT MEASURED",
+      "human_review": "PENDING"
+    },
+    {
+      "case_id": "L12-citation-integrity",
+      "section": "E-citations",
+      "question": "Is wheat a good energy source for ruminants?",
+      "language_inferred": "unknown (latin-script, uncertain)",
+      "intent": "agricultural_question",
+      "retrieved_ids": [
+        "feedipedia-wheat-grain",
+        "feedipedia-alfalfa",
+        "feedipedia-olive-cake"
+      ],
+      "eligible_ids": [
+        "feedipedia-wheat-grain",
+        "feedipedia-olive-cake"
+      ],
+      "supplied_ids": [
+        "feedipedia-wheat-grain",
+        "feedipedia-olive-cake"
+      ],
+      "model_called": true,
+      "raw_response": "Yes, wheat is used in ruminant diets as an energy source [feedipedia-wheat-grain].\n\nIt can replace maize as a high-energy ingredient in concentrates, with the additional benefit that it requires less protein supplementation than maize due to its higher protein content [feedipedia-wheat-grain]. It is very palatable if not ground too finely [feedipedia-wheat-grain]. However, it is more rapidly, extensively, and somewhat erraticly fermented than other cereal grains [feedipedia-wheat-grain]. This can result in digestive problems such as bloat, laminitis and acidosis when too much grain is fed, when there are too many fines or when animals have been introduced too rapidly to the diet [feedipedia-wheat-grain].\n\nWhat the evidence does not cover: specific inclusion amount, cost, Moroccan regional guidance, and farm-specific feeding decisions.\n\nFor safe feeding level and transition for your animals, ask a local agronomist or veterinarian.",
+      "parsed_citations": [
+        "feedipedia-wheat-grain",
+        "feedipedia-wheat-grain",
+        "feedipedia-wheat-grain",
+        "feedipedia-wheat-grain",
+        "feedipedia-wheat-grain"
+      ],
+      "citation_syntax": {
+        "syntax_ok": true,
+        "malformed": []
+      },
+      "citation_containment": {
+        "contained": true,
+        "invalid": []
+      },
+      "hygiene": {
+        "latin_fragments": [],
+        "repeated_sentences": [],
+        "clean": true
+      },
+      "outcome": "answer",
+      "latency_ms": 22928,
+      "error": null,
+      "trace": {
+        "question": "Is wheat a good energy source for ruminants?",
+        "normalized_question": "is wheat a good energy source for ruminants",
+        "detected_intent": "agricultural_question",
+        "detected_category": "Cereals",
+        "extracted_keywords": [
+          "wheat",
+          "good",
+          "energy",
+          "source",
+          "ruminants"
+        ],
+        "documents_considered": {
+          "feedipedia-cowpea-seeds": {
+            "score": 0,
+            "matched": [],
+            "selected": false,
+            "reason": "no matched terms"
+          },
+          "feedipedia-olive-cake": {
+            "score": 1,
+            "matched": [
+              "ruminants"
+            ],
+            "selected": true,
+            "reason": "selected"
+          },
+          "feedipedia-wheat-grain": {
+            "score": 3,
+            "matched": [
+              "energy",
+              "source",
+              "wheat"
+            ],
+            "selected": true,
+            "reason": "selected"
+          },
+          "feedipedia-alfalfa": {
+            "score": 1,
+            "matched": [
+              "ruminants"
+            ],
+            "selected": false,
+            "reason": "excluded: review_status=pending-review (not farmer-facing eligible)"
+          }
+        },
+        "selected_evidence_ids": [
+          "feedipedia-wheat-grain",
+          "feedipedia-olive-cake"
+        ],
+        "thresholds": {
+          "min_score": 1,
+          "top_k": 3
+        },
+        "sufficient_evidence": true,
+        "clarification_requested": false,
+        "model_called": true,
+        "model_id": "muse-spark-1.3",
+        "citation_check": {
+          "found": [
+            "feedipedia-wheat-grain",
+            "feedipedia-wheat-grain",
+            "feedipedia-wheat-grain",
+            "feedipedia-wheat-grain",
+            "feedipedia-wheat-grain"
+          ],
+          "supplied": [
+            "feedipedia-wheat-grain",
+            "feedipedia-olive-cake"
+          ],
+          "contained": true,
+          "invalid": [],
+          "malformed": [],
+          "syntax_ok": true
+        },
+        "status": "answered",
+        "error_type": null,
+        "hygiene": {
+          "latin_fragments": [],
+          "repeated_sentences": [],
+          "clean": true
+        }
+      },
+      "expected_outcome": "answer",
+      "outcome_match": true,
+      "claim_support": "NOT MEASURED",
+      "human_review": "PENDING"
+    },
+    {
+      "case_id": "L13-unknown-ids",
+      "section": "E-citations",
+      "question": "Is cowpea hay good for goats?",
+      "language_inferred": "unknown (latin-script, uncertain)",
+      "intent": "agricultural_question",
+      "retrieved_ids": [
+        "feedipedia-cowpea-seeds",
+        "feedipedia-alfalfa",
+        "feedipedia-olive-cake"
+      ],
+      "eligible_ids": [
+        "feedipedia-cowpea-seeds",
+        "feedipedia-olive-cake"
+      ],
+      "supplied_ids": [
+        "feedipedia-cowpea-seeds",
+        "feedipedia-olive-cake"
+      ],
+      "model_called": true,
+      "raw_response": "Direct answer: The evidence does not specifically say if cowpea hay is good for goats.\n\nExplanation from the evidence: The source says the hay and silage can be an important fodder [feedipedia-cowpea-seeds]. It also says cowpeas are only occasionally used to feed livestock because the seeds are highly valuable as food [feedipedia-cowpea-seeds].\n\nWhat the evidence does not cover: It does not mention goats specifically, nutritional value, amounts to feed, or safety for goats.\n\nNext step: For feeding advice for your goats, ask a local veterinarian or agronomist. This is general information only, not specific feeding advice.",
+      "parsed_citations": [
+        "feedipedia-cowpea-seeds",
+        "feedipedia-cowpea-seeds"
+      ],
+      "citation_syntax": {
+        "syntax_ok": true,
+        "malformed": []
+      },
+      "citation_containment": {
+        "contained": true,
+        "invalid": []
+      },
+      "hygiene": {
+        "latin_fragments": [],
+        "repeated_sentences": [],
+        "clean": true
+      },
+      "outcome": "answer",
+      "latency_ms": 20070,
+      "error": null,
+      "trace": {
+        "question": "Is cowpea hay good for goats?",
+        "normalized_question": "is cowpea hay good for goats",
+        "detected_intent": "agricultural_question",
+        "detected_category": "Legumes",
+        "extracted_keywords": [
+          "cowpea",
+          "hay",
+          "good",
+          "goats"
+        ],
+        "documents_considered": {
+          "feedipedia-cowpea-seeds": {
+            "score": 2,
+            "matched": [
+              "cowpea",
+              "hay"
+            ],
+            "selected": true,
+            "reason": "selected"
+          },
+          "feedipedia-olive-cake": {
+            "score": 1,
+            "matched": [
+              "goats"
+            ],
+            "selected": true,
+            "reason": "selected"
+          },
+          "feedipedia-wheat-grain": {
+            "score": 0,
+            "matched": [],
+            "selected": false,
+            "reason": "no matched terms"
+          },
+          "feedipedia-alfalfa": {
+            "score": 1,
+            "matched": [
+              "hay"
+            ],
+            "selected": false,
+            "reason": "excluded: review_status=pending-review (not farmer-facing eligible)"
+          }
+        },
+        "selected_evidence_ids": [
+          "feedipedia-cowpea-seeds",
+          "feedipedia-olive-cake"
+        ],
+        "thresholds": {
+          "min_score": 1,
+          "top_k": 3
+        },
+        "sufficient_evidence": true,
+        "clarification_requested": false,
+        "model_called": true,
+        "model_id": "muse-spark-1.3",
+        "citation_check": {
+          "found": [
+            "feedipedia-cowpea-seeds",
+            "feedipedia-cowpea-seeds"
+          ],
+          "supplied": [
+            "feedipedia-cowpea-seeds",
+            "feedipedia-olive-cake"
+          ],
+          "contained": true,
+          "invalid": [],
+          "malformed": [],
+          "syntax_ok": true
+        },
+        "status": "answered",
+        "error_type": null,
+        "hygiene": {
+          "latin_fragments": [],
+          "repeated_sentences": [],
+          "clean": true
+        }
+      },
+      "expected_outcome": "answer",
+      "outcome_match": true,
+      "claim_support": "NOT MEASURED",
+      "human_review": "PENDING"
+    },
+    {
+      "case_id": "L14-darija-wheat",
+      "section": "F-darija",
+      "question": "القمح واش مزيان للبقر؟",
+      "language_inferred": "darija-or-arabic (arabic-script, uncertain)",
+      "intent": "agricultural_question",
+      "retrieved_ids": [
+        "feedipedia-wheat-grain"
+      ],
+      "eligible_ids": [
+        "feedipedia-wheat-grain"
+      ],
+      "supplied_ids": [
+        "feedipedia-wheat-grain"
+      ],
+      "model_called": true,
+      "raw_response": "إيه، القمح مزيان للبقر كمصدر ديال الطاقة [feedipedia-wheat-grain].\n\nكيقدر يعوض الذرة في العلف المركز حيت فيه طاقة عالية، وكيحتاج مكمل ديال البروتين قل من الذرة حيت فيه البروتين كثر [feedipedia-wheat-grain]. وهو مستساغ مزيان إلا تطحن رقيق بزاف [feedipedia-wheat-grain]. ولكن كيتخمر في الكرش بسرعة وكثر من الحبوب الخرا، وهادشي كيقدر يدير النفاخ والتهاب الحافر والحموضة إلا تعطى بزاف، أو كان فيه الطحين الرقيق بزاف، أو تدخل للعلف دغيا بلا تدرج [feedipedia-wheat-grain].\n\nالدليل ما كيهضرش على شحال تعطي للبقرة، ولا على النوع ديال البقر ديالك ولا الموسم ولا المنطقة ديالك في المغرب.\n\nقبل ما تستعملو سول مختص محلي في تغذية الحيوانات باش يحدد ليك الطريقة المناسبة.",
+      "parsed_citations": [
+        "feedipedia-wheat-grain",
+        "feedipedia-wheat-grain",
+        "feedipedia-wheat-grain",
+        "feedipedia-wheat-grain"
+      ],
+      "citation_syntax": {
+        "syntax_ok": true,
+        "malformed": []
+      },
+      "citation_containment": {
+        "contained": true,
+        "invalid": []
+      },
+      "hygiene": {
+        "latin_fragments": [],
+        "repeated_sentences": [],
+        "clean": true
+      },
+      "outcome": "answer",
+      "latency_ms": 31603,
+      "error": null,
+      "trace": {
+        "question": "القمح واش مزيان للبقر؟",
+        "normalized_question": "القمح واش مزيان للبقر",
+        "detected_intent": "agricultural_question",
+        "detected_category": "Cereals",
+        "extracted_keywords": [
+          "قمح",
+          "مزيان",
+          "بقر"
+        ],
+        "documents_considered": {
+          "feedipedia-cowpea-seeds": {
+            "score": 0,
+            "matched": [],
+            "selected": false,
+            "reason": "no matched terms"
+          },
+          "feedipedia-olive-cake": {
+            "score": 0,
+            "matched": [],
+            "selected": false,
+            "reason": "no matched terms"
+          },
+          "feedipedia-wheat-grain": {
+            "score": 1,
+            "matched": [
+              "قمح"
+            ],
+            "selected": true,
+            "reason": "selected"
+          },
+          "feedipedia-alfalfa": {
+            "score": 0,
+            "matched": [],
+            "selected": false,
+            "reason": "no matched terms"
+          }
+        },
+        "selected_evidence_ids": [
+          "feedipedia-wheat-grain"
+        ],
+        "thresholds": {
+          "min_score": 1,
+          "top_k": 3
+        },
+        "sufficient_evidence": true,
+        "clarification_requested": false,
+        "model_called": true,
+        "model_id": "muse-spark-1.3",
+        "citation_check": {
+          "found": [
+            "feedipedia-wheat-grain",
+            "feedipedia-wheat-grain",
+            "feedipedia-wheat-grain",
+            "feedipedia-wheat-grain"
+          ],
+          "supplied": [
+            "feedipedia-wheat-grain"
+          ],
+          "contained": true,
+          "invalid": [],
+          "malformed": [],
+          "syntax_ok": true
+        },
+        "status": "answered",
+        "error_type": null,
+        "hygiene": {
+          "latin_fragments": [],
+          "repeated_sentences": [],
+          "clean": true
+        }
+      },
+      "expected_outcome": "answer",
+      "outcome_match": true,
+      "claim_support": "NOT MEASURED",
+      "human_review": "PENDING"
+    },
+    {
+      "case_id": "L15-darija-multi",
+      "section": "F-darija",
+      "question": "واش tourteau d'olive مزيان للغنم؟ وشنو هي أحسن تربة ليه؟",
+      "language_inferred": "darija-or-arabic (arabic-script, uncertain)",
+      "intent": "agricultural_question",
+      "retrieved_ids": [
+        "feedipedia-olive-cake"
+      ],
+      "eligible_ids": [
+        "feedipedia-olive-cake"
+      ],
+      "supplied_ids": [
+        "feedipedia-olive-cake"
+      ],
+      "model_called": true,
+      "raw_response": "الجواب: إيه، tourteau d'olive كيصلاح للغنم حيث الدليل كيقول بلي مقبول مزيان عند المجترات ومنهم الغنم [feedipedia-olive-cake].\n\nالتوضيح: الدليل كيقول بلي هاد البقايا خارجة من عصر الزيتون وكتصلح لعلف الحيوانات [feedipedia-olive-cake]. وهي ماشي مستساغة بزاف ولهادشي من الأحسن تخلط مع مواد أخرى وزيادة دبس السكر كتحسن القبول ديالها [feedipedia-olive-cake]. وهي فيها بزاف ديال الألياف الخشبية وضعيفة في البروتين وضعيفة في الهضم وبحال العلف الخشن [feedipedia-olive-cake]. ويمكن تقدم خضرة ولا مخمرة ولا ناشفة ولا داخلة في العلف المصايب [feedipedia-olive-cake]. وفي الخرفان ديال التسمين الدليل كيوصي ب 40% ديال الإدماج [feedipedia-olive-cake].\n\nاللي ناقص: ما كاين حتى معلومة في الدليل على أحسن تربة ولا على الزراعة ولا على توجيه خاص بالمغرب، وما كاينش شحال تعطي للغنم الكبار ولا للنعاج.\n\nالخطوة الجاية: خلطو مع علف آخر حسب الدليل [feedipedia-olive-cake] وسول بيطري ولا مهندس فلاحي محلي على النسبة اللي تناسب الغنم ديالك وعلى موضوع التربة.\n\nهادشي معلومات عامة وما كيغنيش على استشارة مختص محلي.",
+      "parsed_citations": [
+        "feedipedia-olive-cake",
+        "feedipedia-olive-cake",
+        "feedipedia-olive-cake",
+        "feedipedia-olive-cake",
+        "feedipedia-olive-cake",
+        "feedipedia-olive-cake",
+        "feedipedia-olive-cake"
+      ],
+      "citation_syntax": {
+        "syntax_ok": true,
+        "malformed": []
+      },
+      "citation_containment": {
+        "contained": true,
+        "invalid": []
+      },
+      "hygiene": {
+        "latin_fragments": [
+          "d'olive"
+        ],
+        "repeated_sentences": [],
+        "clean": false
+      },
+      "outcome": "answer",
+      "latency_ms": 74532,
+      "error": null,
+      "trace": {
+        "question": "واش tourteau d'olive مزيان للغنم؟ وشنو هي أحسن تربة ليه؟",
+        "normalized_question": "واش tourteau d olive مزيان للغنم وشنو هي احسن تربه ليه",
+        "detected_intent": "agricultural_question",
+        "detected_category": "Feed by-products",
+        "extracted_keywords": [
+          "tourteau",
+          "olive",
+          "مزيان",
+          "غنم",
+          "وشنو",
+          "احسن",
+          "تربه",
+          "ليه"
+        ],
+        "documents_considered": {
+          "feedipedia-cowpea-seeds": {
+            "score": 0,
+            "matched": [],
+            "selected": false,
+            "reason": "no matched terms"
+          },
+          "feedipedia-olive-cake": {
+            "score": 2,
+            "matched": [
+              "olive",
+              "tourteau"
+            ],
+            "selected": true,
+            "reason": "selected"
+          },
+          "feedipedia-wheat-grain": {
+            "score": 0,
+            "matched": [],
+            "selected": false,
+            "reason": "no matched terms"
+          },
+          "feedipedia-alfalfa": {
+            "score": 0,
+            "matched": [],
+            "selected": false,
+            "reason": "no matched terms"
+          }
+        },
+        "selected_evidence_ids": [
+          "feedipedia-olive-cake"
+        ],
+        "thresholds": {
+          "min_score": 1,
+          "top_k": 3
+        },
+        "sufficient_evidence": true,
+        "clarification_requested": false,
+        "model_called": true,
+        "model_id": "muse-spark-1.3",
+        "citation_check": {
+          "found": [
+            "feedipedia-olive-cake",
+            "feedipedia-olive-cake",
+            "feedipedia-olive-cake",
+            "feedipedia-olive-cake",
+            "feedipedia-olive-cake",
+            "feedipedia-olive-cake",
+            "feedipedia-olive-cake"
+          ],
+          "supplied": [
+            "feedipedia-olive-cake"
+          ],
+          "contained": true,
+          "invalid": [],
+          "malformed": [],
+          "syntax_ok": true
+        },
+        "status": "answered",
+        "error_type": null,
+        "hygiene": {
+          "latin_fragments": [
+            "d'olive"
+          ],
+          "repeated_sentences": [],
+          "clean": false
+        }
+      },
+      "expected_outcome": "scoped",
+      "outcome_match": true,
+      "claim_support": "NOT MEASURED",
+      "human_review": "PENDING"
+    }
+  ]
+}
