@@ -1,4 +1,4 @@
-# LocaleVoice — Product Requirements (Milestone 2)
+# LocaleVoice — Product Requirements (Milestone 3)
 
 ## 1. Product summary
 
@@ -32,7 +32,9 @@ interact entirely in formal written Arabic or English. Assume:
    handled honestly: the system says what happened and what the user can do,
    and never presents a mocked or guessed result as a real model output.
 
-## 4. Milestone 2 scope (this milestone, implemented)
+## 4. Milestone scope
+
+### Milestone 2 (implemented)
 
 - Versioned agricultural corpus (`data/knowledge/`): 3 verified Feedipedia
   excerpts (cowpea, olive cake, wheat grain) with full provenance, plus a
@@ -50,10 +52,23 @@ interact entirely in formal written Arabic or English. Assume:
 - `scripts/validate_corpus.py`: corpus schema validation.
 - 44 new unit tests (65 total), all offline with mocked chat.
 
-## 5. Non-goals for Milestone 2
+### Milestone 3 (this milestone, implemented)
 
-- No Streamlit UI or other full user interface (transcript review gate still
-  pending a UI).
+- Streamlit app (`app.py`): Ask (WAV upload, in-browser recording, typed
+  fallback), mandatory transcript Review gate, Answer with source
+  expanders, and honest Failure states — all over the unchanged
+  Milestone 2 backend.
+- `src/localevoice/ui/flow.py`: testable UI orchestration (validation,
+  transcription handoff, confirmed-text answering).
+- 17 new UI orchestration tests (82 total), all offline with mocks.
+- Live verification: real speech audio -> real ASR transcript ->
+  grounded cited answer through the app's exact code path.
+
+## 5. Non-goals for Milestone 3
+
+Milestone 3 ships the Streamlit UI (upload/record -> review -> answer).
+Still out of scope:
+
 - No end-user authentication.
 - No deployment, hosting, or CI/CD.
 - No embedding/vector retrieval (lexical baseline only, by design).
@@ -76,7 +91,7 @@ interact entirely in formal written Arabic or English. Assume:
   semantic understanding and must never be described as such.
 - Short questions only in the MVP (tens of seconds of audio).
 
-## 7. Acceptance criteria (Milestone 2)
+## 7. Acceptance criteria (Milestones 2–3)
 
 - `python -m pytest -q` passes with no network access and no paid API call.
 - `scripts/validate_corpus.py` reports the corpus valid.
@@ -116,7 +131,7 @@ interact entirely in formal written Arabic or English. Assume:
 
 ## 10. Next milestones
 
-- Milestone 3: Streamlit voice-first UI (record/upload, transcript review,
-  answer plus sources, honest failure states).
-- Later: end-user authentication, evaluation on real Darija recordings,
-  corpus expansion, deployment.
+- Milestone 3: Streamlit voice-first UI — done (this milestone).
+- Milestone 4: real-user validation and hardening (in-browser checks,
+  real Darija recordings, corpus expansion).
+- Later: end-user authentication, deployment.

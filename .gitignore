@@ -8,3 +8,12 @@ htmlcov/
 .streamlit/secrets.toml
 data/samples/*
 !data/samples/.gitkeep
+# Consented speech-evaluation recordings stay local-only.
+data/evaluation/speech/audio/
+# Audio fixtures stay out of Git unless explicitly approved for sharing
+# with appropriate consent.
+*.wav
+*.mp3
+*.m4a
+*.ogg
+*.flac

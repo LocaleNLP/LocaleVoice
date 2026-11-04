@@ -1,4 +1,4 @@
-# LocaleVoice — Technical Requirements (Milestone 2)
+# LocaleVoice — Technical Requirements (Milestone 3)
 
 ## 1. Stack and constraints
 
@@ -18,9 +18,11 @@
 - No hardcoded secrets, no invented endpoints. An API call is reported as
   successful only if it actually ran.
 
-## 2. Repository layout (Milestone 2)
+## 2. Repository layout (Milestone 3)
 
 ```
+app.py                      # Streamlit UI (thin layer over the backend)
+.streamlit/config.toml      # obsidian/sand/neon-lime theme
 docs/                       # 01–06 architecture documents (system of record)
 src/localevoice/
   providers/
@@ -33,16 +35,20 @@ src/localevoice/
     answer.py               # orchestration + grounded generation + run records
   evaluation/
     runner.py               # offline/live fixture evaluation + reports
+    speech.py               # speech-sample eval (WER/CER gated on references)
+  ui/
+    flow.py                 # UI orchestration (no Streamlit imports; tested)
 scripts/
   verify_meta_chat.py       # real hosted chat smoke test
   transcribe_file.py        # real transcription smoke test (PATH_TO_WAV)
   answer_question.py        # CLI vertical slice (--question ...)
   evaluate_pipeline.py      # offline/live evaluation runner
   validate_corpus.py        # corpus schema validation
-tests/                      # mocked unit tests, no network (65 tests)
+  evaluate_speech.py        # speech-sample eval (offline + opt-in transcribe)
+tests/                      # mocked unit tests, no network (139 tests)
 data/
   knowledge/                # manifest.json + documents.jsonl (versioned corpus)
-  evaluation/               # questions.json (versioned synthetic fixtures)
+  evaluation/               # questions.json + speech/ samples (versioned)
   samples/                  # Git-ignored; local user-provided audio only
 .env.example                # placeholder values, no real secret
 README.md                   # exact setup, test, and smoke-test commands
@@ -95,7 +101,10 @@ requirements.txt            # pinned install set
   tokens matched; ties broken by `document_id`; only score > 0 returned.
 - Search-only normalization (documented in code): NFKC fold, strip Arabic
   diacritics/tatweel, alef/ة/ى folding, Arabic definite-article stripping,
-  Latin lowercasing, punctuation removal, single-character token drop.
+  Latin lowercasing, punctuation removal (including Arabic ؟،؛),
+  single-character token drop, and a minimal documented stopword filter
+  (Milestone 4A precision fix: without it, English function words matched
+  every English document).
 - The original query string is never modified. Retrieval claims no Darija
   semantic understanding.
 
@@ -133,7 +142,8 @@ requirements.txt            # pinned install set
 ## 8. Test requirements
 
 - `python -m pytest -q` must run without making live network calls: all unit
-  tests mock the SDK/HTTP boundary (65 tests, Milestone 2).
+  tests mock the SDK/HTTP boundary (139 tests, Milestone 4C), including
+  headless AppTest UI flows (mocked providers; not browser verification).
 - Unit tests cover corpus validation, normalization, French/Arabic/mixed
   search, ranking, no-match and empty behavior, prompt construction,
   citation extraction, insufficient-evidence gating, provider errors,
@@ -142,11 +152,12 @@ requirements.txt            # pinned install set
   `answer_question.py` grounded run, `evaluate_pipeline.py --live`.
 - No mocked response may be presented as a real model result.
 
-## 9. Non-goals for Milestone 2
+## 9. Non-goals for Milestone 3
 
-No Streamlit UI, no end-user authentication, no deployment, no embedding
-retrieval, no language-quality claims. See
-`docs/01-product-requirements.md`.
+No end-user authentication, no deployment, no embedding retrieval, no
+language-quality claims. In-browser verification of the app is pending
+(sandbox blocked server sockets; see `docs/06-implementation-plan.md`).
+See `docs/01-product-requirements.md`.
 
 ## 10. Assumptions
 
@@ -155,7 +166,13 @@ retrieval, no language-quality claims. See
   the insufficient-evidence path.
 - Short WAV uploads (tens of seconds) for the transcription experiment.
 
-## 11. Acceptance criteria
+## 11. UI rendering rule (Milestone 4A)
+
+Transcripts and answers are untrusted text and must be HTML-escaped
+before rendering (`safe_html_paragraph` in `ui/flow.py`); raw
+interpolation into `unsafe_allow_html` markup is a defect.
+
+## 11b. Acceptance criteria
 
 - `python -m pytest -q` passes with no network access and no paid API call.
 - Corpus validates; offline evaluation passes on all fixtures.
@@ -183,6 +200,6 @@ insufficient-evidence result (exit 0).
 
 ## 14. Next milestones
 
-- Milestone 3: Streamlit UI. Later: end-user auth, Darija evaluation,
-  corpus expansion, deployment. Details in
+- Milestone 3: Streamlit UI — done. Milestone 4: real-user validation
+  and hardening. Later: end-user auth, deployment. Details in
   `docs/06-implementation-plan.md`.

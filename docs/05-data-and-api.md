@@ -1,4 +1,4 @@
-# LocaleVoice — Data and API (Milestone 2)
+# LocaleVoice — Data and API (Milestone 3)
 
 ## 1. External APIs
 
@@ -83,7 +83,11 @@ authored questions (Arabic-script Darija, Darija/French mixes, one French
 control, two unsupported), each with `relevant_doc_ids`,
 `expect_insufficient`, `category`, and `human_review` (null = pending).
 Explicitly labeled as not real farmer data; they do not establish
-real-world language quality.
+real-world language quality. The speech-sample format
+(`data/evaluation/speech/`, Milestone 4A) adds consent-gated records
+with reference/ASR/corrected transcripts, expected evidence, and
+separate ASR/retrieval/grounding/usability sections; WER/CER compute
+only where a human-verified reference exists. No samples collected yet.
 
 ## 5. Configuration
 
@@ -103,7 +107,7 @@ LOCALEVOICE_ASR_LANGUAGE_BIAS=<optional, e.g. ar>
 - Short WAV uploads (tens of seconds).
 - Hosted inference only in every milestone.
 
-## 7. Acceptance criteria (Milestone 2)
+## 7. Acceptance criteria (Milestones 2–3)
 
 - Provider modules match the request shapes in sections 1.1–1.2 exactly.
 - Corpus validates; every record carries genuine provenance.
@@ -139,6 +143,7 @@ LOCALEVOICE_ASR_LANGUAGE_BIAS=<optional, e.g. ar>
 
 ## 11. Next milestones
 
-- Milestone 3: UI surfaces for transcript review and sourced answers.
-- Later: corpus expansion with the same provenance bar, Darija speech
-  evaluation.
+- Milestone 3: UI surfaces for transcript review and sourced answers —
+  done (this milestone).
+- Milestone 4: in-browser verification, real Darija speech evaluation,
+  corpus expansion with the same provenance bar.

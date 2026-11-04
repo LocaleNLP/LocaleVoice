@@ -1,8 +1,7 @@
-# LocaleVoice — App Flow (Milestone 2)
+# LocaleVoice — App Flow (Milestone 3)
 
-Milestone 2 implements stages 2, 4, and 5 as tested CLI-driven modules; the
-full six-stage voice UX still awaits the Milestone 3 UI. This document is
-the system of record for the flow.
+Milestone 3 wires stages 1–6 into a working Streamlit app over the tested
+Milestone 2 modules. This document is the system of record for the flow.
 
 ## 1. Flow overview
 
@@ -20,8 +19,8 @@ Every stage can fail; every failure is reported honestly with a retry path
 
 - Input: a short spoken question (tens of seconds), recorded in-app or
   uploaded as a WAV file.
-- Status: no UI yet. `scripts/transcribe_file.py` takes a user-provided WAV
-  path; `scripts/answer_question.py` accepts typed text directly.
+- Status: implemented in the app (WAV upload, `st.audio_input`
+  recording with RIFF validation, typed fallback).
 
 ### Stage 2 — Transcribe the actual recording
 
@@ -41,8 +40,11 @@ Every stage can fail; every failure is reported honestly with a retry path
 - The user sees the transcript and can correct it before retrieval runs.
 - Rationale: ASR output — especially for Darija, whose support is
   unvalidated — must never flow silently into advice.
-- Status: not implemented (needs the Milestone 3 UI). The CLI accepts
-  already-reviewed text, which plays the role of a reviewed transcript.
+- Status: implemented in the app as a mandatory gate — recognized
+  transcript shown read-only, corrected version edited and confirmed
+  before anything is answered. Confirmation starts a `Conversation`
+  (Milestone 4B): direct answers and generic abstentions go to stage 6,
+  while categorized no-evidence questions go to a clarify turn first.
 
 ### Stage 4 — Retrieve relevant evidence
 
@@ -63,8 +65,8 @@ Every stage can fail; every failure is reported honestly with a retry path
 ### Stage 6 — Display the answer and supporting sources
 
 - The user sees the answer together with the sources it relies on.
-- Status: CLI display only (answer, evidence list with scores,
-  insufficient-evidence flag). Full UX in Milestone 3.
+- Status: implemented in the app (answer, source expanders with IDs and
+  scores, insufficient-evidence banner, model/latency caption).
 
 ## 3. Failure states and retries
 
@@ -90,10 +92,16 @@ silently re-transcribed.
 - Corpus coverage is narrow (3 excerpts); most questions take the
   insufficient-evidence path by design.
 
-## 5. Acceptance criteria (Milestone 2)
+## 5. Acceptance criteria (Milestone 3, validated through 4C)
 
-- This flow agrees with the other five documents.
-- Stages 2, 4, and 5 exist as tested modules with live-verified behavior.
+- This flow agrees with the other documents.
+- All six stages run in the app over tested modules; the audio path was
+  verified live through the app's exact code path (in-browser check
+  pending, see `docs/06-implementation-plan.md`).
+- Milestone 4C status: conversation rollback integrity tested;
+  browser checklist corrected to 13 steps, all BLOCKED here; Darija
+  wording extracted for review (all PENDING); speech workflow ready
+  with zero samples; no human round run yet.
 
 ## 6. Non-goals
 

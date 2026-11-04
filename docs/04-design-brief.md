@@ -1,9 +1,8 @@
-# LocaleVoice — Design Brief (Milestone 2)
+# LocaleVoice — Design Brief (Milestone 3)
 
-No interface is built in this milestone. This brief fixes the design
-principles and the concrete UI contract that Milestone 3 implements, so that
-Milestone 1–2 provider, pipeline, and script design does not close off the
-intended UX.
+Milestone 3 implements this brief as a Streamlit app (`app.py`). The
+principles and screen contract below are unchanged from Milestones 1–2;
+this revision adds the implemented visual system and build notes.
 
 ## 1. Design principles
 
@@ -55,21 +54,41 @@ Failure) without changing their semantics.
 - No provider output may be faked for design purposes; design fixtures must
   be labeled as fixtures.
 
-## 5. Assumptions
+## 5. Implemented visual system (Milestone 3)
+
+- Palette: obsidian `#14120F` (page background), deep umber `#1E1A14`
+  (secondary surfaces), sand `#EDE4D3` (text), neon-lime `#C6FF3D`
+  (primary accent), via `.streamlit/config.toml` (dark base).
+- Minimal styling: one small CSS block (transcript/answer type scale,
+  Arabic `dir="auto"` rendering, muted helper notes). No gradients,
+  glow effects, or decorative widgets.
+- Layout: centered single column (usable on desktop and mobile);
+  two-button rows only. Loading via spinners; errors via inline
+  failure blocks with Retry / Start-over actions.
+- Screens map 1:1 to the contract: Ask (upload + in-browser record +
+  typed fallback), Review (recognized vs corrected transcript),
+  Answer (answer + source expanders + model/latency caption),
+  Failure (plain message + collapsible technical detail).
+- In-browser recording uses `st.audio_input`; bytes are RIFF-validated
+  as WAV before transcription, and non-WAV input gets an honest
+  re-upload message rather than a provider error.
+
+## 5b. Assumptions
 
 - Phone or laptop with microphone and modern browser; possible
   low-bandwidth connectivity, so keep audio uploads short and pages light.
 - Streamlit is the planned UI framework (Milestone 3); this brief does not
   depend on framework-specific widgets.
 
-## 6. Acceptance criteria (Milestone 2)
+## 6. Acceptance criteria (Milestone 3)
 
-- This brief agrees with the other five documents and constrains, but does
-  not implement, any interface.
+- This brief agrees with the other five documents.
+- The app implements the four screens with the review gate mandatory and
+  no mocked provider output shown as real.
 
 ## 7. Non-goals
 
-- No UI of any kind is built in Milestone 2.
+- No end-user auth, deployment, or visual design system beyond section 5.
 - No visual design system, branding, or styling beyond this brief.
 
 ## 8. Failure states
@@ -88,5 +107,7 @@ state with a next action.
 
 ## 10. Next milestones
 
-- Milestone 3: Streamlit implementation of the four screens above; no UI
-  in Milestone 2.
+- Milestone 3 (this milestone): Streamlit implementation of the four
+  screens above — done.
+- Later: end-user auth, Darija speech evaluation, corpus expansion,
+  deployment.

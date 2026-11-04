@@ -19,16 +19,35 @@ from localevoice.knowledge.corpus import Document
 # - Alef variants (أ إ آ) -> ا; ta marbuta ة -> ه; alef maqsura ى -> ي.
 # Latin text is lowercased. Punctuation is replaced with spaces. As light
 # stemming, the Arabic definite article prefix ال is stripped from tokens
-# longer than 4 characters (so القمح matches قمح). This is search-only and
-# does not alter stored text or the user's query string.
+# longer than 4 characters (so القمح matches قمح). Single-character tokens
+# and STOPWORDS are dropped. All search-only; stored text and the user's
+# query string are never altered.
 _AR_DIACRITICS = re.compile(r"[\u064b-\u0652\u0670]")
+_AR_PUNCT = re.compile(r"[؟،؛]")
 _AR_NORM = str.maketrans({"أ": "ا", "إ": "ا", "آ": "ا", "ة": "ه", "ى": "ي", "ـ": ""})
 _NON_TOKEN = re.compile(r"[^\w\u0600-\u06ff]+", re.UNICODE)
+
+# Baseline precision guard: high-frequency function words carry no topical
+# signal for lexical matching, so they are dropped from BOTH query and
+# document tokens before scoring. Without this, any English question matches
+# every English document via "is/the/of". This is a fixed minimal list, not
+# a linguistic claim about Darija stopwords.
+STOPWORDS = frozenset(
+    """
+    a an and are as at be but by for from has have in is it of on or that the
+    this to was what when with you your much many more most
+    le la les de des du un une des et ou est sont il ils elle elles pour
+    dans avec pas plus tout toute
+    واش شنو شنهو هي هو هوما ديال في من علي على الى الي هل ما لا نعم هاد هدي
+    هدا كان كانت كاين كاينة غير بلا حتى اما او ام
+    """.split()
+)
 
 
 def normalize_for_search(text: str) -> str:
     """Normalize text for lexical matching. Search use only."""
     folded = unicodedata.normalize("NFKC", text)
+    folded = _AR_PUNCT.sub(" ", folded)
     folded = _AR_DIACRITICS.sub("", folded)
     folded = folded.translate(_AR_NORM)
     folded = folded.lower()
@@ -46,6 +65,8 @@ def tokenize(text: str) -> list[str]:
         if len(raw) > 4 and raw.startswith("ال"):
             raw = raw[2:]
         if len(raw) < 2:  # drop single-character noise (e.g. "d" from "d'olive")
+            continue
+        if raw in STOPWORDS:
             continue
         tokens.append(raw)
     return tokens

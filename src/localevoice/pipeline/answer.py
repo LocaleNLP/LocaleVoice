@@ -9,6 +9,7 @@ from dataclasses import asdict, dataclass, field
 
 from localevoice.knowledge.corpus import Corpus, CorpusError
 from localevoice.knowledge.retrieve import Evidence, retrieve
+from localevoice.pipeline.clarify import classify_question
 from localevoice.providers.meta_chat import (
     ConfigurationError,
     MetaChatError,
@@ -54,6 +55,7 @@ class AnswerResult:
     model: str | None
     elapsed_ms: int | None
     error: dict | None = None
+    clarification_category: str | None = None
 
     def to_run_record(self) -> dict:
         """Serialize for saving. Never contains API keys."""
@@ -153,9 +155,11 @@ def answer_question(
     ]
 
     if not relevant:
+        clarification = classify_question(question)
         return AnswerResult(
             question=question,
-            answer_text=INSUFFICIENT_EVIDENCE_MESSAGE,
+            answer_text=clarification.message or INSUFFICIENT_EVIDENCE_MESSAGE,
+            clarification_category=clarification.category,
             language=lang,
             source_ids_supplied=[],
             evidence=[],

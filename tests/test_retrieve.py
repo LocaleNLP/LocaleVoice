@@ -116,3 +116,23 @@ def test_metadata_preserved_on_evidence():
 
 def test_score_document_empty_query_tokens():
     assert score_document([], _doc("a", "wheat")) == (0, [])
+
+
+def test_stopwords_dropped_from_query_and_docs():
+    assert tokenize("What is the wheat?") == ["wheat"]
+    assert tokenize("How much wheat per week?") == ["how", "wheat", "per", "week"]
+    assert tokenize("Le blé pour les bovins") == ["blé", "bovins"]
+    assert tokenize("واش القمح مزيان؟") == ["قمح", "مزيان"]
+
+
+def test_stopword_only_overlap_retrieves_nothing():
+    # Regression: "is/the/of" must not match every English document.
+    docs = [
+        _doc("w", "Wheat is used as a source of energy for cattle."),
+        _doc("o", "Olive cake is fed to sheep in times of scarcity."),
+    ]
+    assert retrieve("What is the capital of Morocco?", docs) == []
+    assert (
+        retrieve("Le blé est-il bon ?", [_doc("w", "Wheat", aliases=["blé"])])
+        != []
+    )
