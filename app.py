@@ -401,7 +401,12 @@ if stage == "ask":
         handle_audio(uploaded.name, uploaded.getvalue(), source="upload")
         st.rerun()
     st.divider()
-    recorded = st.audio_input("Or record now")
+    recorded = st.audio_input(
+        "Or record now",
+        help="If recording shows an error: allow microphone access for "
+        "your browser (macOS System Settings → Privacy & Security → "
+        "Microphone, plus the browser's site permission), then reload.",
+    )
     if recorded is not None and st.button(
         "Transcribe recording", use_container_width=True, key="ask_transcribe_record"
     ):
