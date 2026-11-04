@@ -1,4 +1,10 @@
-"""Corpus loading and validation (Milestone 2)."""
+"""Corpus loading and validation (Milestone 4D schema).
+
+Document schema (all required unless noted): id, title, source_name,
+source_url, category, crop_or_species, excerpt, keywords (list, may be
+empty), language, date_accessed, review_status. Extra fields (e.g.
+usage_or_license_notes, source_updated_at) are preserved untouched.
+"""
 
 from __future__ import annotations
 
@@ -8,15 +14,26 @@ from dataclasses import dataclass, field
 
 
 REQUIRED_FIELDS = (
-    "document_id",
+    "id",
     "title",
-    "publisher",
+    "source_name",
     "source_url",
-    "retrieved_at",
+    "category",
+    "crop_or_species",
+    "excerpt",
     "language",
-    "crop_or_topic",
-    "content",
-    "usage_or_license_notes",
+    "date_accessed",
+    "review_status",
+)
+
+CATEGORIES = (
+    "Cereals",
+    "Legumes",
+    "Animal nutrition",
+    "Feed ingredients",
+    "Feed by-products",
+    "Forage",
+    "Livestock",
 )
 
 
@@ -26,16 +43,17 @@ class CorpusError(Exception):
 
 @dataclass(frozen=True)
 class Document:
-    document_id: str
+    id: str
     title: str
-    publisher: str
+    source_name: str
     source_url: str
-    retrieved_at: str
+    category: str
+    crop_or_species: str
+    excerpt: str
     language: str
-    crop_or_topic: str
-    content: str
-    usage_or_license_notes: str
-    search_aliases: tuple[str, ...] = ()
+    date_accessed: str
+    review_status: str
+    keywords: tuple[str, ...] = ()
     extra: dict = field(default_factory=dict, compare=False)
 
 
@@ -53,20 +71,27 @@ def validate_document(record: dict) -> list[str]:
         ("http://", "https://")
     ):
         problems.append("source_url must start with http:// or https://")
-    aliases = record.get("search_aliases", [])
-    if aliases is not None:
-        if not isinstance(aliases, list) or not all(
-            isinstance(a, str) and a.strip() for a in aliases
+    category = record.get("category")
+    if (
+        isinstance(category, str)
+        and category.strip()
+        and category not in CATEGORIES
+    ):
+        problems.append(f"category must be one of {list(CATEGORIES)}")
+    keywords = record.get("keywords", [])
+    if keywords is not None:
+        if not isinstance(keywords, list) or not all(
+            isinstance(a, str) and a.strip() for a in keywords
         ):
-            problems.append("search_aliases must be a list of non-empty strings")
+            problems.append("keywords must be a list of non-empty strings")
     return problems
 
 
 def _to_document(record: dict) -> Document:
-    known = set(REQUIRED_FIELDS) | {"search_aliases"}
+    known = set(REQUIRED_FIELDS) | {"keywords"}
     return Document(
         **{name: record[name] for name in REQUIRED_FIELDS},
-        search_aliases=tuple(record.get("search_aliases") or ()),
+        keywords=tuple(record.get("keywords") or ()),
         extra={k: v for k, v in record.items() if k not in known},
     )
 
@@ -79,7 +104,7 @@ class Corpus:
 
     @property
     def ids(self) -> list[str]:
-        return [d.document_id for d in self.documents]
+        return [d.id for d in self.documents]
 
 
 def load_corpus(corpus_dir: str) -> Corpus:
@@ -122,16 +147,16 @@ def load_corpus(corpus_dir: str) -> Corpus:
                 raise CorpusError(
                     f"{documents_file}:{lineno}: " + "; ".join(problems)
                 )
-            doc_id = record["document_id"]
+            doc_id = record["id"]
             if doc_id in seen:
                 raise CorpusError(
-                    f"{documents_file}:{lineno}: duplicate document_id: {doc_id}"
+                    f"{documents_file}:{lineno}: duplicate id: {doc_id}"
                 )
             seen.add(doc_id)
             documents.append(_to_document(record))
 
     declared = manifest.get("documents")
-    if isinstance(declared, list) and [d.document_id for d in documents] != declared:
+    if isinstance(declared, list) and [d.id for d in documents] != declared:
         raise CorpusError(
             "Manifest 'documents' list does not match documents file order/content."
         )

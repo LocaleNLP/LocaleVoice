@@ -101,6 +101,40 @@ Status of every message below: **HUMAN REVIEW PENDING**.
 - Approved: no (PENDING)
 - Pronunciation notes: _
 
+## Intent responses (Milestone 4D, source: `pipeline/intent.py`)
+
+### IN-greeting
+
+- Current: وعليكم السلام! مرحبا بك في LocaleVoice. كيف نقدر نعاونك اليوم فالفلاحة؟
+- Intended: "Peace be upon you too! Welcome to LocaleVoice. How can I help you today with farming?"
+- Correction: _
+- Approved: no (PENDING)
+- Pronunciation notes: _
+
+### IN-thanks
+
+- Current: العفو! إلا كان عندك شي سؤال آخر على الفلاحة، مرحبا.
+- Intended: "You're welcome! If you have any other question about farming, welcome."
+- Correction: _
+- Approved: no (PENDING)
+- Pronunciation notes: _
+
+### IN-goodbye
+
+- Current: بسلامة! الله يعاونك فالفلاحة ديالك.
+- Intended: "Goodbye! May God help you with your farming."
+- Correction: _
+- Approved: no (PENDING)
+- Pronunciation notes: _
+
+### IN-unsupported-domain
+
+- Current: LocaleVoice حاليا كيجاوب غير على الأسئلة الفلاحة. صيفط ليا سؤال على المزروعات، التربة، السقي، ولا تربية المواشي.
+- Intended: "LocaleVoice currently only answers farming questions. Send me a question about crops, soil, irrigation, or livestock raising."
+- Correction: _
+- Approved: no (PENDING)
+- Pronunciation notes: _
+
 ## Review log
 
 | Date | Reviewer | Messages covered | Outcome |

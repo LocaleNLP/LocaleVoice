@@ -33,7 +33,7 @@ def main(argv: list[str] | None = None) -> int:
         f"(version {corpus.manifest.get('corpus_version')})"
     )
     for doc in corpus.documents:
-        print(f"  - {doc.document_id}: {doc.title} [{doc.language}]")
+        print(f"  - {doc.id}: {doc.title} [{doc.language}/{doc.category}]")
     return 0
 
 

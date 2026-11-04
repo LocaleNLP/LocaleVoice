@@ -25,6 +25,7 @@ from localevoice.pipeline.conversation import (  # noqa: E402
     respond_to_clarification,
     start_conversation,
 )
+from localevoice.pipeline.intent import UNSUPPORTED_GENERAL  # noqa: E402
 from localevoice.ui.flow import (  # noqa: E402
     safe_html_paragraph,
     transcribe_upload,
@@ -106,6 +107,7 @@ def render_evidence(result: AnswerResult) -> None:
     for item in result.evidence:
         with st.expander(f"[{item['document_id']}] {item['title']}"):
             st.write(f"**Publisher:** {item['publisher']}")
+            st.write(f"**Category:** {item.get('category', '—')}")
             st.write(f"**Match score:** {item['score']}")
             st.write(f"**Matched terms:** {', '.join(item['matched_terms'])}")
             st.write(f"**Source:** {item['source_url']}")
@@ -373,7 +375,12 @@ elif stage == "answer":
             + "</p>",
             unsafe_allow_html=True,
         )
-        if result.insufficient_evidence:
+        if result.intent == UNSUPPORTED_GENERAL:
+            st.info(
+                "Outside agricultural scope. LocaleVoice currently "
+                "focuses on farming questions."
+            )
+        elif result.insufficient_evidence:
             st.warning("Not enough evidence to answer.")
         st.markdown(
             safe_html_paragraph(result.answer_text, "lv-answer"),
@@ -382,6 +389,25 @@ elif stage == "answer":
         render_evidence(result)
         if result.model:
             st.caption(f"Model: {result.model} · {result.elapsed_ms} ms")
+        check = (result.trace or {}).get("citation_check")
+        if check is not None:
+            found = check.get("found") or []
+            invalid = check.get("invalid") or []
+            if invalid:
+                st.caption(
+                    f"Citation check: {len(invalid)} citation(s) not in "
+                    f"supplied sources: {', '.join(invalid)}"
+                )
+            elif found:
+                st.caption(
+                    f"Citation check: {len(found)}/{len(found)} "
+                    "citation(s) from supplied sources."
+                )
+            else:
+                st.caption("Citation check: no citations found in the answer.")
+        if result.trace:
+            with st.expander("Developer diagnostics"):
+                st.json(result.trace)
         col_a, col_b = st.columns(2)
         with col_a:
             if st.button("Ask another question", type="primary", use_container_width=True,

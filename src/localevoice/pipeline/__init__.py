@@ -1,6 +1,25 @@
 """Orchestration and answer generation."""
 
-from localevoice.pipeline.clarify import Clarification, classify_question
+from localevoice.pipeline.clarify import (
+    RECOGNIZED_CONFIDENCE,
+    Clarification,
+    SlotExtraction,
+    SlotValue,
+    build_value_index,
+    classify_question,
+    extract_context_slots,
+    extract_slot_values,
+)
+from localevoice.pipeline.intent import (
+    AGRICULTURAL_QUESTION,
+    GOODBYE,
+    GREETING,
+    THANKS,
+    UNCLEAR,
+    UNSUPPORTED_GENERAL,
+    Intent,
+    classify_intent,
+)
 from localevoice.pipeline.conversation import (
     ABSTAINED,
     ANSWERED,
@@ -11,6 +30,7 @@ from localevoice.pipeline.conversation import (
     respond_to_clarification,
     start_conversation,
 )
+from localevoice.pipeline.trace import build_trace, validate_citations
 
 from localevoice.pipeline.answer import (
     INSUFFICIENT_EVIDENCE_MESSAGE,
@@ -32,14 +52,30 @@ __all__ = [
     "AnswerResult",
     "Clarification",
     "Conversation",
+    "GOODBYE",
+    "GREETING",
+    "Intent",
     "LanguageInfo",
+    "RECOGNIZED_CONFIDENCE",
+    "SlotExtraction",
+    "SlotValue",
+    "THANKS",
     "Turn",
+    "UNCLEAR",
+    "UNSUPPORTED_GENERAL",
+    "AGRICULTURAL_QUESTION",
     "answer_question",
     "build_messages",
+    "build_trace",
+    "build_value_index",
+    "classify_intent",
     "classify_question",
+    "extract_context_slots",
+    "extract_slot_values",
     "find_citations",
     "finish_conversation",
     "infer_language",
     "respond_to_clarification",
     "start_conversation",
+    "validate_citations",
 ]

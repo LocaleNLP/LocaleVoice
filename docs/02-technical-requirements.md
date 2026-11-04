@@ -33,6 +33,8 @@ src/localevoice/
     retrieve.py             # deterministic lexical retrieval baseline
   pipeline/
     answer.py               # orchestration + grounded generation + run records
+    intent.py               # deterministic intent routing (no model calls)
+    trace.py                # evidence traces + citation validation
   evaluation/
     runner.py               # offline/live fixture evaluation + reports
     speech.py               # speech-sample eval (WER/CER gated on references)
@@ -45,7 +47,7 @@ scripts/
   evaluate_pipeline.py      # offline/live evaluation runner
   validate_corpus.py        # corpus schema validation
   evaluate_speech.py        # speech-sample eval (offline + opt-in transcribe)
-tests/                      # mocked unit tests, no network (139 tests)
+tests/                      # mocked unit tests, no network (183 tests)
 data/
   knowledge/                # manifest.json + documents.jsonl (versioned corpus)
   evaluation/               # questions.json + speech/ samples (versioned)
@@ -90,36 +92,45 @@ requirements.txt            # pinned install set
 
 ## 5. Corpus and retrieval requirements
 
-- Corpus schema (see `docs/05-data-and-api.md`): `document_id`, `title`,
-  `publisher`, `source_url`, `retrieved_at`, `language`, `crop_or_topic`,
-  `content`, `usage_or_license_notes`, plus optional `search_aliases`
-  (terms observed verbatim on the source page, for matching only).
+- Corpus schema, Milestone 4D (see `docs/05-data-and-api.md`): `id`,
+  `title`, `source_name`, `source_url`, `category`, `crop_or_species`,
+  `excerpt`, `keywords`, `language`, `date_accessed`, `review_status`.
+  Internal retrieval views keep the stable `document_id` naming.
 - `load_corpus` validates every record and the manifest; malformed data
   raises `CorpusError`. An empty corpus loads fine and is treated by
   callers as a safe no-answer state.
 - Retrieval is a deterministic lexical baseline: score = distinct query
   tokens matched; ties broken by `document_id`; only score > 0 returned.
+  An opt-in `weighting="idf"` mode re-ranks by IDF-weighted sums for
+  comparison; the count baseline stays the default.
 - Search-only normalization (documented in code): NFKC fold, strip Arabic
-  diacritics/tatweel, alef/ة/ى folding, Arabic definite-article stripping,
-  Latin lowercasing, punctuation removal (including Arabic ؟،؛),
-  single-character token drop, and a minimal documented stopword filter
-  (Milestone 4A precision fix: without it, English function words matched
-  every English document).
+  diacritics/tatweel, alef/ة/ى folding, hamza folding (ؤ→و, ئ→ي),
+  Arabic definite-article stripping, Latin lowercasing, punctuation
+  removal (including Arabic ؟،؛), single-character token drop, and a
+  minimal documented stopword filter (Milestone 4A precision fix:
+  without it, English function words matched every English document).
+- Thresholds are explicit and caller-configurable: `top_k` caps
+  returned evidence; `min_score` gates relevance (CLI `--min-score`).
 - The original query string is never modified. Retrieval claims no Darija
   semantic understanding.
 
 ## 6. Pipeline and evaluation requirements
 
-- `answer_question` retrieves first; with no relevant evidence (score below
-  `min_score`) it returns the transparent insufficient-evidence message
-  with no model call.
+- `answer_question` classifies intent first (deterministic, no model):
+  social intents resolve instantly; unsupported-domain abstains with
+  its own message; otherwise it retrieves, and with no relevant
+  evidence (score below `min_score`) returns the insufficient-evidence
+  message or a targeted clarification, with no model call.
 - Generation prompt treats supplied evidence as the only factual basis,
   requires `[document_id]` citations, forbids invented sources, prefers
   concise Darija for Darija questions, preserves uncertainty, asks for
   missing context, and avoids chemical/dosage instructions.
 - `AnswerResult` carries answer text, language info (requested/inferred with
   uncertainty), supplied source IDs, evidence with scores, the
-  insufficient-evidence flag, model ID, elapsed time, and error detail.
+  insufficient-evidence flag, model ID, elapsed time, error detail,
+  intent, and a secret-free evidence trace. Citation containment is
+  validated post-generation and reported; containment is not a claim
+  of independent factual verification.
 - `to_run_record()` serializes everything storable with no secrets.
 - Evaluation fixtures are versioned, synthetic, and explicitly labeled as
   not real farmer data. Offline mode checks recall + gating; live mode
@@ -142,7 +153,7 @@ requirements.txt            # pinned install set
 ## 8. Test requirements
 
 - `python -m pytest -q` must run without making live network calls: all unit
-  tests mock the SDK/HTTP boundary (139 tests, Milestone 4C), including
+  tests mock the SDK/HTTP boundary (183 tests, Milestone 4D), including
   headless AppTest UI flows (mocked providers; not browser verification).
 - Unit tests cover corpus validation, normalization, French/Arabic/mixed
   search, ranking, no-match and empty behavior, prompt construction,

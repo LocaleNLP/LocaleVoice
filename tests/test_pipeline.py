@@ -19,15 +19,16 @@ from localevoice.providers.meta_chat import ConfigurationError, MetaChatError
 
 def _doc(doc_id="doc-1", content="Wheat is an energy source for ruminants."):
     return Document(
-        document_id=doc_id,
+        id=doc_id,
         title="Wheat grain",
-        publisher="P",
+        source_name="P",
         source_url="https://example.org",
-        retrieved_at="2026-10-29",
+        category="Cereals",
+        crop_or_species="wheat",
+        excerpt=content,
         language="en",
-        crop_or_topic="wheat",
-        content=content,
-        usage_or_license_notes="test",
+        date_accessed="2026-10-29",
+        review_status="verified-excerpt",
     )
 
 
@@ -69,7 +70,7 @@ def test_success_path_returns_structured_result(monkeypatch):
 def test_no_evidence_returns_insufficient_without_model_call():
     chat_fn = Mock(return_value="should never be called")
     result = answer_question(
-        "شنو هي عاصمة المغرب؟", _corpus(_doc()), chat_fn=chat_fn
+        "كلام غير مفهوم xyzzy", _corpus(_doc()), chat_fn=chat_fn
     )
     assert result.insufficient_evidence is True
     assert result.source_ids_supplied == []

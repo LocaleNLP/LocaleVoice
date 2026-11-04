@@ -78,10 +78,25 @@ def test_evidence_available_still_answers_without_clarification(monkeypatch):
     chat_fn.assert_called_once()
 
 
-def test_unsupported_question_keeps_generic_abstention():
+def test_unsupported_question_gets_domain_response():
+    # Deliberate 4D change: clear out-of-domain questions get the
+    # unsupported-domain message instead of the generic abstention.
+    from localevoice.pipeline.intent import RESPONSES, UNSUPPORTED_GENERAL
+
     corpus = load_corpus("data/knowledge")
     chat_fn = Mock(return_value="must not be called")
     result = answer_question("شنو هي عاصمة المغرب؟", corpus, chat_fn=chat_fn)
+    assert result.insufficient_evidence is True
+    assert result.intent == UNSUPPORTED_GENERAL
+    assert result.answer_text == RESPONSES[UNSUPPORTED_GENERAL]
+    assert result.evidence == []
+    chat_fn.assert_not_called()
+
+
+def test_truly_unknown_question_keeps_generic_abstention():
+    corpus = load_corpus("data/knowledge")
+    chat_fn = Mock(return_value="must not be called")
+    result = answer_question("كلام غير مفهوم xyzzy", corpus, chat_fn=chat_fn)
     assert result.insufficient_evidence is True
     assert result.clarification_category == GENERIC
     assert result.answer_text == INSUFFICIENT_EVIDENCE_MESSAGE

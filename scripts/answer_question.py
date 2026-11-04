@@ -34,6 +34,12 @@ def main(argv: list[str] | None = None) -> int:
     )
     parser.add_argument("--top-k", type=int, default=3, help="Retrieval limit.")
     parser.add_argument(
+        "--min-score",
+        type=float,
+        default=1,
+        help="Minimum retrieval score for evidence (default: 1).",
+    )
+    parser.add_argument(
         "--corpus-dir", default=DEFAULT_CORPUS_DIR, help="Corpus directory."
     )
     parser.add_argument(
@@ -56,6 +62,7 @@ def main(argv: list[str] | None = None) -> int:
             args.question,
             corpus,
             top_k=args.top_k,
+            min_score=args.min_score,
             language=args.language,
         )
     except (ValueError, CorpusError) as exc:

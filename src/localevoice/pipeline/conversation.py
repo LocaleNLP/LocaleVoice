@@ -24,7 +24,13 @@ from dataclasses import asdict, dataclass, field
 
 from localevoice.knowledge.corpus import Corpus
 from localevoice.pipeline.answer import AnswerResult, answer_question
-from localevoice.pipeline.clarify import GENERIC, STILL_MISSING
+from localevoice.pipeline.clarify import (
+    GENERIC,
+    STILL_MISSING,
+    build_value_index,
+    extract_context_slots,
+    extract_slot_values,
+)
 
 AWAITING_CLARIFICATION = "awaiting_clarification"
 ANSWERED = "answered"
@@ -47,6 +53,9 @@ class Conversation:
     clarifications_asked: list[str] = field(default_factory=list)
     clarification_responses: list[str] = field(default_factory=list)
     accumulated_context: str = ""
+    slots_filled: list[str] = field(default_factory=list)
+    slot_values: list[dict] = field(default_factory=list)
+    unclassified_terms: list[str] = field(default_factory=list)
     evidence: list[dict] = field(default_factory=list)
     status: str = AWAITING_CLARIFICATION
     result: AnswerResult | None = None
@@ -61,6 +70,9 @@ class Conversation:
             "clarifications_asked": list(self.clarifications_asked),
             "clarification_responses": list(self.clarification_responses),
             "accumulated_context": self.accumulated_context,
+            "slots_filled": list(self.slots_filled),
+            "slot_values": [dict(v) for v in self.slot_values],
+            "unclassified_terms": list(self.unclassified_terms),
             "evidence": [dict(e) for e in self.evidence],
             "status": self.status,
             "result": self.result.to_run_record() if self.result else None,
@@ -159,6 +171,24 @@ def respond_to_clarification(
     conversation.turns.append(Turn(role="farmer", text=response))
     conversation.clarification_responses.append(response)
     conversation.accumulated_context = " ".join(conversation.clarification_responses)
+    for slot in extract_context_slots(response):
+        if slot not in conversation.slots_filled:
+            conversation.slots_filled.append(slot)
+    extraction = extract_slot_values(
+        response, build_value_index(corpus.documents)
+    )
+    for value in extraction.values:
+        record = {
+            "value": value.value,
+            "slot": value.slot,
+            "confidence": value.confidence,
+            "matched_docs": list(value.matched_docs),
+        }
+        if record not in conversation.slot_values:
+            conversation.slot_values.append(record)
+    for term in extraction.unclassified:
+        if term not in conversation.unclassified_terms:
+            conversation.unclassified_terms.append(term)
     combined = f"{conversation.original_question} {conversation.accumulated_context}"
 
     kwargs: dict = {
@@ -179,6 +209,30 @@ def respond_to_clarification(
         conversation.accumulated_context = " ".join(
             conversation.clarification_responses
         )
+        remaining = set(extract_context_slots(conversation.accumulated_context))
+        conversation.slots_filled = [
+            s for s in conversation.slots_filled if s in remaining
+        ]
+        # Rebuild values/unclassified from the surviving responses only.
+        index = build_value_index(corpus.documents)
+        rebuilt_values: list[dict] = []
+        rebuilt_terms: list[str] = []
+        for surviving in conversation.clarification_responses:
+            ext = extract_slot_values(surviving, index)
+            for value in ext.values:
+                record = {
+                    "value": value.value,
+                    "slot": value.slot,
+                    "confidence": value.confidence,
+                    "matched_docs": list(value.matched_docs),
+                }
+                if record not in rebuilt_values:
+                    rebuilt_values.append(record)
+            for term in ext.unclassified:
+                if term not in rebuilt_terms:
+                    rebuilt_terms.append(term)
+        conversation.slot_values = rebuilt_values
+        conversation.unclassified_terms = rebuilt_terms
         conversation.status = AWAITING_CLARIFICATION
         conversation.result = result
         return conversation

@@ -230,6 +230,48 @@ def test_response_to_answered_conversation_rejected(monkeypatch):
     assert len(conv.turns) == 2
 
 
+def test_slots_tracked_across_responses():
+    corpus = load_corpus("data/knowledge")
+    chat_fn = Mock(return_value="must not be called")
+    conv = start_conversation(
+        "شنو هي أحسن المزروعات فهاد المنطقة؟", corpus, chat_fn=chat_fn
+    )
+    assert conv.slots_filled == []
+    respond_to_clarification(conv, "سوس ماسة", corpus, chat_fn=chat_fn)
+    # Proper nouns are not slot keywords; generic region words are.
+    respond_to_clarification(conv, "فأي إقليم", corpus, chat_fn=chat_fn)
+    assert conv.slots_filled == ["location"]
+    assert conv.to_record()["slots_filled"] == ["location"]
+
+
+def test_supplied_info_is_never_asked_twice():
+    corpus = load_corpus("data/knowledge")
+    chat_fn = Mock(return_value="must not be called")
+    conv = start_conversation(
+        "شحال كتسقي الزرع فالسيمانة؟", corpus, chat_fn=chat_fn
+    )
+    assert "المزروعات لي عندك" in conv.clarifications_asked[0]
+    respond_to_clarification(conv, "الخضرة", corpus, chat_fn=chat_fn)
+    assert conv.slots_filled == ["crop"]
+    assert conv.status == AWAITING_CLARIFICATION
+    # The crop question must not be repeated once crop info arrived.
+    assert "المزروعات لي عندك" not in conv.clarifications_asked[1]
+    assert conv.clarifications_asked[0] != conv.clarifications_asked[1]
+
+
+def test_clarification_messages_never_repeat():
+    corpus = load_corpus("data/knowledge")
+    chat_fn = Mock(return_value="must not be called")
+    conv = start_conversation(
+        "واش التساقطات كانت كافية للموسم الفلاحي؟", corpus, chat_fn=chat_fn
+    )
+    respond_to_clarification(conv, "الغرب", corpus, chat_fn=chat_fn)
+    respond_to_clarification(conv, "2024", corpus, chat_fn=chat_fn)
+    asked = conv.clarifications_asked
+    assert len(asked) == 3  # ask + still-missing (same note, recorded twice max)
+    assert asked[0] != asked[1]  # follow-up differs from the first ask
+
+
 def test_conversation_record_has_no_secrets(monkeypatch):
     monkeypatch.setenv("MODEL_API_KEY", "super-secret-key")
     corpus = load_corpus("data/knowledge")

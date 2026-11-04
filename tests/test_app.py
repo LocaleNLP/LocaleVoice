@@ -141,7 +141,7 @@ def test_typed_fallback_insufficient_evidence_path(monkeypatch):
     monkeypatch.setenv("META_CHAT_MODEL", "test-model")
     with patch("openai.OpenAI") as cls:
         app = _run()
-        app.text_area[0].set_value("What is the capital of Morocco?")
+        app.text_area[0].set_value("كلام غير مفهوم xyzzy")
         app.run()
         _click(app, "Continue with typed text")
         assert [h.value for h in app.header] == ["Review"]
@@ -149,6 +149,20 @@ def test_typed_fallback_insufficient_evidence_path(monkeypatch):
         assert [h.value for h in app.header] == ["Answer"]
         assert len(app.warning) == 1
         assert "Not enough evidence" in app.warning[0].value
+        cls.return_value.chat.completions.create.assert_not_called()
+
+
+def test_unsupported_domain_shows_info_banner(monkeypatch):
+    monkeypatch.setenv("META_CHAT_MODEL", "test-model")
+    with patch("openai.OpenAI") as cls:
+        app = _run()
+        app.text_area[0].set_value("What is the capital of Morocco?")
+        app.run()
+        _click(app, "Continue with typed text")
+        _click(app, "Confirm")
+        assert [h.value for h in app.header] == ["Answer"]
+        assert len(app.warning) == 0
+        assert any("agricultural scope" in i.value for i in app.info)
         cls.return_value.chat.completions.create.assert_not_called()
 
 

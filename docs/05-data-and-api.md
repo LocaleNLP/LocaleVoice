@@ -50,33 +50,40 @@
 
 Location: `data/knowledge/` (`manifest.json` + `documents.jsonl`).
 
-Record format (all fields required unless noted):
+Record format, Milestone 4D schema (all fields required unless noted):
 
-- `document_id`, `title`, `publisher`, `source_url`, `retrieved_at`,
-  `language`, `crop_or_topic`, `content`, `usage_or_license_notes`
-- Optional: `search_aliases` (terms observed verbatim on the source page;
-  matching only, not source content), plus extra provenance fields such
-  as `source_updated_at`.
+- `id`, `title`, `source_name`, `source_url`, `category`,
+  `crop_or_species`, `excerpt`, `keywords`, `language`, `date_accessed`,
+  `review_status`
+- `category` is one of: Cereals, Legumes, Animal nutrition, Feed
+  ingredients, Feed by-products, Forage, Livestock.
+- `keywords`: terms observed verbatim on the source page (matching
+  only, not source content). Optional extras preserved verbatim:
+  `usage_or_license_notes`, `source_updated_at`.
 
-Verified contents (retrieved 2026-10-29 via direct HTTPS fetch; short
-whitespace-normalized excerpts, no invented text):
+Verified contents (short whitespace-normalized excerpts fetched via
+direct HTTPS, no invented text):
 
-| document_id              | source                                              | topic                    |
-| ------------------------ | --------------------------------------------------- | ------------------------ |
-| feedipedia-cowpea-seeds  | https://www.feedipedia.org/node/232                 | cowpea / ruminant feed   |
-| feedipedia-olive-cake    | https://www.feedipedia.org/node/32                  | olive by-products / feed |
-| feedipedia-wheat-grain   | https://www.feedipedia.org/node/223                 | wheat grain / feed       |
+| id                     | source                              | category          |
+| ---------------------- | ----------------------------------- | ----------------- |
+| feedipedia-cowpea-seeds| https://www.feedipedia.org/node/232 | Legumes           |
+| feedipedia-olive-cake  | https://www.feedipedia.org/node/32  | Feed by-products  |
+| feedipedia-wheat-grain | https://www.feedipedia.org/node/223 | Cereals           |
+| feedipedia-alfalfa     | https://www.feedipedia.org/node/275 | Forage            |
 
-Publisher for all three: Feedipedia (INRAE, CIRAD, AFZ, FAO). Coverage is
-narrow by design; most questions correctly take the insufficient-evidence
-path. Retrieval takes reviewed-transcript text and returns ranked passages
-or an empty set; never a silent empty answer.
+Publisher for all four: Feedipedia (INRAE, CIRAD, AFZ, FAO). The first
+three were retrieved 2026-10-29; alfalfa was retrieved 2026-11-04 and
+is marked `pending-review` until a second person confirms it. Coverage
+is narrow by design; most questions correctly take the
+insufficient-evidence path. Retrieval takes reviewed-transcript text
+and returns ranked passages or an empty set; never a silent empty
+answer. Curation process: `data/knowledge/README.md`.
 
 Sources that could not be verified from this environment (FAO pages behind
 bot protection, unreachable ministry site) were left out entirely rather
 than reconstructed from memory or snippets.
 
-## 4. Evaluation fixtures (implemented, version m2-eval-1.0.0)
+## 4. Evaluation fixtures (implemented, version m2-eval-1.1.0)
 
 Location: `data/evaluation/questions.json`. Six synthetic, manually
 authored questions (Arabic-script Darija, Darija/French mixes, one French
@@ -118,7 +125,7 @@ LOCALEVOICE_ASR_LANGUAGE_BIAS=<optional, e.g. ar>
 
 ## 8. Non-goals
 
-- No corpus expansion beyond the 3 verified excerpts in this milestone.
+- No corpus expansion beyond the 4 verified excerpts in this milestone.
 - No embedding/vector retrieval, no new endpoints, no invented parameters,
   no hardcoded secrets.
 

@@ -10,7 +10,7 @@ been run yet.
 
 - Facilitator runs `streamlit run app.py` locally with a valid
   `MODEL_API_KEY`; participant uses the browser (desktop or phone).
-- Explain first: this is a prototype with 3 reference excerpts, so most
+- Explain first: this is a prototype with 4 reference excerpts, so most
   questions will end in clarification or honest abstention. That is the
   expected behavior under test, not a failure.
 - Consent: spoken questions may be transcribed by the hosted ASR
@@ -34,9 +34,14 @@ been run yet.
 5. **Seasonal questions** — "Ask whether rainfall was enough for the
    season." Expect: the rainfall clarification (location + season),
    then abstention with the still-missing note.
-6. **Outside the knowledge base** — "Ask anything the 3 excerpts
-   cannot cover (e.g. the capital of Morocco)." Expect: generic
-   abstention, no fabricated answer.
+6. **Outside the knowledge base** — "Ask anything the 4 excerpts
+   cannot cover (e.g. the capital of Morocco)." Expect: the
+   unsupported-domain message, no fabricated answer.
+7. **Greetings and thanks** — "Greet the assistant and thank it."
+   Expect: natural Darija welcome/thanks replies (no farming answer
+   attempted). Covered by automated tests; observe only whether the
+   wording feels natural and record corrections in
+   `docs/08-darija-language-review.md`.
 
 ## Capture per scenario
 

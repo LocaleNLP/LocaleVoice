@@ -1,4 +1,57 @@
-# LocaleVoice — Implementation Plan (Milestone 4C)
+# LocaleVoice — Implementation Plan (Milestone 4E)
+
+## 0e. Milestone 4E work items — end-to-end validation & knowledge audit (done)
+
+1. Context slots: `extract_slot_values()` + `build_value_index()` split
+   recognized corpus-backed values from unclassified terms (proper
+   nouns never guessed); `animal` slot added; values/terms accumulate
+   across turns and roll back on failed retries. 21 new tests.
+2. Retrieval stemming: fused preposition+article prefixes (فال/بال/لل)
+   now stem (فالطماطم→طماطم, للبقر→بقر) while genuine ف/ب-initial
+   words (برسيم, فواكه) are preserved; season slot gains عام/سنه.
+3. Intent: adversarial suite (34 tests); `Salam` + `شكرا بزاف`-style
+   thanks fixed; thanks requires a head token (بزاف alone stays
+   unclear); ag signals gain alfalfa/livestock/plural terms.
+4. Knowledge audit (`docs/10-knowledge-audit-4e.md`): all 4 excerpts
+   sentence-verbatim on live Feedipedia pages, in order; 14/14
+   keywords, publishers, and update stamps verified. Alfalfa stays
+   pending-review. Manifest date wording corrected.
+5. Benchmark (`data/evaluation/questions_4e.json`, 20 items):
+   20/20 recall+gating offline; 5/5 clarification categories; 10/10
+   model-call discipline; 1 extra lexical match noted (alfalfa via
+   "cattle"). Pinned by `tests/test_eval_4e.py`. See
+   `docs/11-evaluation-4e.md`.
+6. Live: chat smoke OK; grounded wheat answer with contained
+   citations; greeting/unsupported make no model call; ASR endpoint
+   reachable (tone probe, no speech → honest empty result). No real
+   Darija recording: speech quality still unmeasured.
+7. Browser: still BLOCKED (socket bind denied, no browser);
+   checklist extended to 14 steps (diagnostics) and re-confirmed.
+8. Tests: 244 passed (61 new: 21 slots, 35 intent, 5 eval-set);
+   base eval still 7/7. No commit/push.
+
+## 0d. Milestone 4D work items — retrieval & conversation intelligence (done)
+
+1. Intent layer (`pipeline/intent.py`): deterministic greeting/thanks/
+   goodbye/agricultural/unsupported/unclear classification; social
+   intents resolve instantly with no model call; unsupported-domain
+   questions get a distinct abstention. Darija wording PENDING review.
+2. Corpus migrated to the structured 4D schema (id/title/source_name/
+   source_url/category/crop_or_species/excerpt/keywords/language/
+   date_accessed/review_status); 4th genuine excerpt added (alfalfa,
+   pending second-person review); curation process documented in
+   `data/knowledge/README.md`. Internal evidence contract unchanged.
+3. Retrieval: hamza folding, opt-in IDF weighting (count baseline
+   byte-identical), `--min-score` CLI flag, documented thresholds.
+4. Evidence trace on every result (`pipeline/trace.py`) + post-
+   generation citation containment check (reported, never claimed as
+   factual verification); UI diagnostics expander, unsupported banner,
+   citation caption; prompt rule against inventing sources.
+5. Clarification context-slot tracking (location/crop/season/soil/
+   problem) with recorded, never-repeated follow-ups.
+6. Tests: 183 passed (44 new); offline eval 7/7 with new alfalfa
+   fixture; live chat smoke + grounded Darija answer re-verified.
+   No browser run; no Darija audio; no commit/push.
 
 ## 0c. Milestone 4C work items — human validation readiness audit (done)
 
@@ -177,7 +230,15 @@ See section 0b.
 See section 0c. Preparation only: no browser session, no review, no
 round, and no audio were completed in this milestone.
 
-### Milestone 4D — First human validation round (single next milestone)
+### Milestone 4D — Retrieval & conversation intelligence (done)
+
+See section 0d.
+
+### Milestone 4E — End-to-end validation & knowledge audit (done)
+
+See section 0e.
+
+### Milestone 5 — First human validation round (single next milestone)
 
 - A person runs the README browser checklist (desktop + mobile),
   including the multi-turn conversation steps, and records PASS/FAIL.

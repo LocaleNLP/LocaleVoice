@@ -4,7 +4,7 @@ from __future__ import annotations
 
 import pytest
 
-from localevoice.knowledge.corpus import Document
+from localevoice.knowledge.corpus import Document, load_corpus
 from localevoice.knowledge.retrieve import (
     normalize_for_search,
     retrieve,
@@ -15,16 +15,17 @@ from localevoice.knowledge.retrieve import (
 
 def _doc(doc_id, content, aliases=(), title="T"):
     return Document(
-        document_id=doc_id,
+        id=doc_id,
         title=title,
-        publisher="P",
+        source_name="P",
         source_url="https://example.org",
-        retrieved_at="2026-10-29",
+        category="Cereals",
+        crop_or_species="wheat",
+        excerpt=content,
         language="en",
-        crop_or_topic="topic",
-        content=content,
-        usage_or_license_notes="test",
-        search_aliases=tuple(aliases),
+        date_accessed="2026-10-29",
+        review_status="verified-excerpt",
+        keywords=tuple(aliases),
     )
 
 
@@ -112,6 +113,41 @@ def test_metadata_preserved_on_evidence():
     assert item.publisher == "P"
     assert item.source_url == "https://example.org"
     assert "energy source" in item.content
+
+
+def test_normalize_hamza_variants():
+    assert normalize_for_search("مؤمن") == "مومن"
+    assert normalize_for_search("قارئ") == "قاري"
+
+
+def test_idf_weighting_ranks_distinctive_terms_first():
+    docs = [
+        _doc("common", "wheat is grown widely"),
+        _doc("rare", "wheat xerophyte"),
+    ]
+    count = retrieve("wheat xerophyte", docs, top_k=2)
+    assert [e.document_id for e in count] == ["rare", "common"]
+    assert count[0].score == 2
+    weighted = retrieve("wheat xerophyte", docs, top_k=2, weighting="idf")
+    assert [e.document_id for e in weighted] == ["rare", "common"]
+    assert weighted[0].score > weighted[1].score
+    assert isinstance(weighted[0].score, float)
+
+
+def test_idf_weighting_rejects_unknown_mode():
+    with pytest.raises(ValueError, match="weighting"):
+        retrieve("wheat", [_doc("a", "wheat")], weighting="semantic")
+
+
+def test_multiple_relevant_excerpts_returned():
+    corpus = load_corpus("data/knowledge")
+    found = retrieve("protein", corpus.documents, top_k=3)
+    assert [e.document_id for e in found] == [
+        "feedipedia-alfalfa",
+        "feedipedia-olive-cake",
+        "feedipedia-wheat-grain",
+    ]
+    assert all(e.score == 1 for e in found)
 
 
 def test_score_document_empty_query_tokens():

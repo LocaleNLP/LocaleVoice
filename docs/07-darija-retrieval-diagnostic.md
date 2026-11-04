@@ -138,6 +138,17 @@ farmer replies, and each reply retries retrieval over original +
 context. Still-missing abstention wording lives in
 `clarify.STILL_MISSING` (HUMAN REVIEW PENDING). Suite: 137 passed.
 
+## 9b. Follow-up (Milestone 4D)
+
+- Greetings/thanks no longer abstain: deterministic intent layer
+  resolves them instantly with no model call (wording PENDING review).
+- Corpus grew to 4 excerpts (alfalfa, pending second-person review)
+  under the structured schema; the §4 verdict stands (coverage, not
+  matching, is the binding constraint; translation-assist rejected).
+- Every result carries an evidence trace; citation containment is
+  validated post-generation and reported (not a factual-verification
+  claim). Suite: 183 passed; offline eval 7/7.
+
 ## 9. Validation status (Milestone 4C)
 
 - Rollback integrity proven by test (fail-fail-succeed, exactly-once

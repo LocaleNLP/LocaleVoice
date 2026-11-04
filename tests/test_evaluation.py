@@ -26,15 +26,16 @@ from localevoice.providers.meta_chat import (
 
 def _doc(doc_id="doc-1", content="Wheat is an energy source for ruminants."):
     return Document(
-        document_id=doc_id,
+        id=doc_id,
         title="T",
-        publisher="P",
+        source_name="P",
         source_url="https://example.org",
-        retrieved_at="2026-10-29",
+        category="Cereals",
+        crop_or_species="wheat",
+        excerpt=content,
         language="en",
-        crop_or_topic="wheat",
-        content=content,
-        usage_or_license_notes="test",
+        date_accessed="2026-10-29",
+        review_status="verified-excerpt",
     )
 
 

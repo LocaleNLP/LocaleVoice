@@ -67,12 +67,18 @@ not browser verification. On your machine, with a real browser:
     clean restart.
 13. Trace — on the Answer screen, the Conversation expander shows every
     turn in order.
+14. Diagnostics — on the Answer screen, the Developer diagnostics
+    expander shows the retrieval/evidence trace (intent, terms,
+    scores, selected evidence, rejection reasons, model invocation,
+    citation check) with no secrets.
 
 Record each step as PASS/FAIL/BLOCKED with the observed behavior.
 
-Verification status: all 13 steps are BLOCKED in the development
-sandbox (no server sockets, no browser); none has been run in a real
-browser yet. Steps 2, 3, and 11 make live Meta API calls.
+Verification status (re-confirmed 2026-11-04): all 14 steps are
+BLOCKED in the development sandbox — `streamlit run` fails with
+`PermissionError: [Errno 1]` on socket bind, and no browser or
+automation binary is available; none has been run in a real browser
+yet. Steps 2, 3, and 11 make live Meta API calls.
 
 ## Tests (no network, no paid calls)
 
@@ -80,7 +86,7 @@ browser yet. Steps 2, 3, and 11 make live Meta API calls.
 python -m pytest -q
 ```
 
-All 139 unit tests mock the SDK/HTTP boundary, so this needs no API key
+All 244 unit tests mock the SDK/HTTP boundary, so this needs no API key
 and no network access.
 
 ## Corpus validation (offline)
@@ -101,8 +107,10 @@ python scripts/answer_question.py --question "شنو هي عاصمة المغر�
 python scripts/answer_question.py --question "القمح واش مزيان للبقر؟" --save /tmp/run.json
 ```
 
-Options: `--language`, `--top-k`, `--corpus-dir`, `--save`. A live call is
-made only when relevant evidence is found.
+Options: `--language`, `--top-k`, `--min-score`, `--corpus-dir`, `--save`.
+A live call is made only when relevant evidence is found. Greetings and
+clearly out-of-domain questions resolve instantly with no model call;
+`--save` run records include the evidence trace explaining why.
 
 ## Evaluation
 
@@ -110,7 +118,14 @@ Offline (no API calls, checks retrieval recall + gating):
 
 ```bash
 python scripts/evaluate_pipeline.py
+python scripts/evaluate_pipeline.py --fixtures data/evaluation/questions_4e.json
 ```
+
+The base set (`questions.json`) holds 7/7 recall+gating; the 4E set
+(`questions_4e.json`, 20 items: in-corpus, multi-doc, clarification,
+abstain, unsupported, social) holds 20/20 recall+gating with one
+extra-lexical-match note (see `docs/11-evaluation-4e.md`). Both are
+synthetic fixtures, not farmer data.
 
 Live (real Meta answers; checks citation containment, latency, model):
 
@@ -160,7 +175,8 @@ speech has been transcribed and reviewed. See
 - `docs/01-product-requirements.md` … `docs/06-implementation-plan.md`
 - `src/localevoice/providers/` — Meta chat + ASR providers
 - `src/localevoice/knowledge/` — corpus loading, validation, retrieval
-- `src/localevoice/pipeline/` — grounded answer orchestration
+- `src/localevoice/pipeline/` — intent, grounded answers, trace, conversation
+- `data/knowledge/` — 4 verified excerpts + curation process (`README.md`)
 - `src/localevoice/evaluation/` — fixture evaluation + reports
 - `src/localevoice/ui/` — UI orchestration (tested, no Streamlit imports)
 - `data/knowledge/` — versioned corpus + manifest

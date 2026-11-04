@@ -89,8 +89,13 @@ silently re-transcribed.
 - Connectivity is available at request time; offline use is out of scope.
 - Darija transcription quality is unvalidated until real recordings are
   tested; the stage-3 review gate exists partly for this reason.
-- Corpus coverage is narrow (3 excerpts); most questions take the
+- Corpus coverage is narrow (4 excerpts); most questions take the
   insufficient-evidence path by design.
+- Intent routing (Milestone 4D): greetings/thanks/goodbye resolve
+  instantly with no model call; clear out-of-domain questions get the
+  unsupported-domain message; everything else flows to retrieval.
+  UI states: greeting welcome, answer + sources, clarification,
+  insufficient-evidence, unsupported-domain, failure.
 
 ## 5. Acceptance criteria (Milestone 3, validated through 4C)
 

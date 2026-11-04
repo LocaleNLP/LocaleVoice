@@ -15,15 +15,17 @@ from localevoice.knowledge.corpus import (
 
 def _doc(**overrides):
     record = {
-        "document_id": "doc-1",
+        "id": "doc-1",
         "title": "Title",
-        "publisher": "Publisher",
+        "source_name": "Publisher",
         "source_url": "https://example.org/doc-1",
-        "retrieved_at": "2026-10-29",
+        "category": "Cereals",
+        "crop_or_species": "wheat",
+        "excerpt": "Wheat content here.",
+        "keywords": [],
         "language": "en",
-        "crop_or_topic": "wheat",
-        "content": "Wheat content here.",
-        "usage_or_license_notes": "Prototype excerpt.",
+        "date_accessed": "2026-10-29",
+        "review_status": "verified-excerpt",
     }
     record.update(overrides)
     return record
@@ -41,7 +43,7 @@ def _write_corpus(tmp_path, records, manifest_docs=None):
         "documents": (
             manifest_docs
             if manifest_docs is not None
-            else [r["document_id"] for r in records]
+            else [r["id"] for r in records]
         ),
     }
     (tmp_path / "manifest.json").write_text(json.dumps(manifest))
@@ -49,11 +51,11 @@ def _write_corpus(tmp_path, records, manifest_docs=None):
 
 
 def test_load_valid_corpus(tmp_path):
-    corpus_dir = _write_corpus(tmp_path, [_doc(), _doc(document_id="doc-2")])
+    corpus_dir = _write_corpus(tmp_path, [_doc(), _doc(id="doc-2")])
     corpus = load_corpus(corpus_dir)
     assert corpus.ids == ["doc-1", "doc-2"]
     assert corpus.manifest["corpus_version"] == "test-1"
-    assert corpus.documents[0].content == "Wheat content here."
+    assert corpus.documents[0].excerpt == "Wheat content here."
 
 
 def test_load_empty_corpus_is_valid(tmp_path):
@@ -83,9 +85,14 @@ def test_missing_required_field_fails(tmp_path):
         load_corpus(_write_corpus(tmp_path, [record]))
 
 
-def test_empty_content_fails(tmp_path):
-    with pytest.raises(CorpusError, match="content"):
-        load_corpus(_write_corpus(tmp_path, [_doc(content="   ")]))
+def test_empty_excerpt_fails(tmp_path):
+    with pytest.raises(CorpusError, match="excerpt"):
+        load_corpus(_write_corpus(tmp_path, [_doc(excerpt="   ")]))
+
+
+def test_bad_category_fails(tmp_path):
+    with pytest.raises(CorpusError, match="category"):
+        load_corpus(_write_corpus(tmp_path, [_doc(category="Breakfast")]))
 
 
 def test_bad_source_url_fails(tmp_path):
@@ -93,7 +100,7 @@ def test_bad_source_url_fails(tmp_path):
         load_corpus(_write_corpus(tmp_path, [_doc(source_url="not-a-url")]))
 
 
-def test_duplicate_document_id_fails(tmp_path):
+def test_duplicate_id_fails(tmp_path):
     with pytest.raises(CorpusError, match="duplicate"):
         load_corpus(_write_corpus(tmp_path, [_doc(), _doc()]))
 
@@ -108,13 +115,19 @@ def test_manifest_mismatch_fails(tmp_path):
 def test_validate_document_reports_problems():
     assert validate_document(_doc()) == []
     assert validate_document("nope") == ["record is not a JSON object"]
-    problems = validate_document(_doc(title="", content=""))
+    problems = validate_document(_doc(title="", excerpt=""))
     assert "missing or empty required field: title" in problems
-    assert "missing or empty required field: content" in problems
-    assert validate_document(_doc(search_aliases=["ok", ""])) != []
+    assert "missing or empty required field: excerpt" in problems
+    assert validate_document(_doc(keywords=["ok", ""])) != []
 
 
 def test_real_corpus_loads():
     corpus = load_corpus("data/knowledge")
-    assert len(corpus.documents) == 3
+    assert len(corpus.documents) == 4
     assert all(d.source_url.startswith("https://") for d in corpus.documents)
+    assert [d.category for d in corpus.documents] == [
+        "Legumes",
+        "Feed by-products",
+        "Cereals",
+        "Forage",
+    ]
