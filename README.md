@@ -71,10 +71,14 @@ not browser verification. On your machine, with a real browser:
     expander shows the retrieval/evidence trace (intent, terms,
     scores, selected evidence, rejection reasons, model invocation,
     citation check) with no secrets.
+15. Social intents — type `السلام عليكم`, then `شكرا بزاف`; each
+    gets an instant natural reply with no sources and no model call.
+    (No live call.)
 
-Record each step as PASS/FAIL/BLOCKED with the observed behavior.
+Record each step as PASS/FAIL/BLOCKED/NOT TESTED with the observed
+behavior.
 
-Verification status (re-confirmed 2026-11-04): all 14 steps are
+Verification status (re-confirmed 2026-11-04): all 15 steps are
 BLOCKED in the development sandbox — `streamlit run` fails with
 `PermissionError: [Errno 1]` on socket bind, and no browser or
 automation binary is available; none has been run in a real browser
@@ -86,7 +90,7 @@ yet. Steps 2, 3, and 11 make live Meta API calls.
 python -m pytest -q
 ```
 
-All 244 unit tests mock the SDK/HTTP boundary, so this needs no API key
+All 246 unit tests mock the SDK/HTTP boundary, so this needs no API key
 and no network access.
 
 ## Corpus validation (offline)

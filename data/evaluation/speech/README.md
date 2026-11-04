@@ -15,6 +15,11 @@ contains **no recordings and no transcripts**.
 - `pending`, `declined`, and `withdrawn` samples must not be transcribed,
   evaluated, or shared. `withdrawn` means: delete the audio and remove the
   transcripts from the record.
+- Enforcement is in code, not just policy: `evaluate_sample` scores
+  nothing (WER/CER null, retrieval/grounding unevaluated) and
+  `evaluate_speech.py` runs no retrieval and no ASR call for any sample
+  whose consent is not `granted` — even if transcripts linger in the
+  file. Covered by `test_non_granted_samples_are_never_scored`.
 - `permitted_use` states what the speaker agreed to (e.g.
   `"prototype evaluation only, no redistribution"`). Do not exceed it.
 
@@ -52,6 +57,7 @@ contains **no recordings and no transcripts**.
   "topic": "wheat feeding for cattle",
   "intended_language": "moroccan-darija",
   "audio_ref": "audio/dvq-001.wav",
+  "recording_context": "quiet room, phone microphone, seated",
   "reference_transcript": "<human-verified transcript>",
   "asr_transcript": null,
   "corrected_transcript": null,
@@ -59,7 +65,8 @@ contains **no recordings and no transcripts**.
   "answer_text": null,
   "answer_citations": null,
   "answer_supplied_ids": null,
-  "usability_notes": null
+  "usability_notes": null,
+  "recognition_notes": null
 }
 ```
 

@@ -98,7 +98,9 @@ def main(argv: list[str] | None = None) -> int:
         )
         text = sample.get("corrected_transcript") or sample.get("asr_transcript")
         retrieved = None
-        if text and text.strip():
+        # No retrieval over non-granted transcripts: declined/withdrawn
+        # data must not be evaluated even when it lingers in the file.
+        if sample.get("consent_status") == "granted" and text and text.strip():
             retrieved = [
                 e.document_id
                 for e in retrieve(text, corpus.documents, top_k=3)

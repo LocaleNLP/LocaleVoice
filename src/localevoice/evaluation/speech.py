@@ -50,11 +50,13 @@ def validate_sample(record: dict) -> list[str]:
         problems.append(f"consent_status must be one of {list(CONSENT_STATUSES)}")
     for name in (
         "audio_ref",
+        "recording_context",
         "reference_transcript",
         "asr_transcript",
         "corrected_transcript",
         "answer_text",
         "usability_notes",
+        "recognition_notes",
     ):
         value = record.get(name)
         if value is not None and not isinstance(value, str):
@@ -128,6 +130,7 @@ class SpeechItemReport:
     retrieval: dict = field(default_factory=dict)
     grounding: dict = field(default_factory=dict)
     usability_notes: str | None = None
+    recognition_notes: str | None = None
 
 
 def evaluate_sample(
@@ -143,7 +146,8 @@ def evaluate_sample(
         retrieved_ids: document IDs retrieved for the corrected (or ASR)
             transcript, or None when retrieval was not run.
     """
-    usable = sample["consent_status"] == "granted" and audio_exists
+    granted = sample["consent_status"] == "granted"
+    usable = granted and audio_exists
     reference = sample.get("reference_transcript")
     hypothesis = sample.get("corrected_transcript") or sample.get("asr_transcript")
 
@@ -153,12 +157,20 @@ def evaluate_sample(
         "wer": None,
         "cer": None,
     }
-    if reference and reference.strip() and hypothesis and hypothesis.strip():
+    # Non-granted samples are never scored, even if transcripts linger:
+    # pending/declined/withdrawn data must not be evaluated or shared.
+    if (
+        granted
+        and reference
+        and reference.strip()
+        and hypothesis
+        and hypothesis.strip()
+    ):
         asr_section["wer"] = wer(reference, hypothesis)
         asr_section["cer"] = cer(reference, hypothesis)
 
     expected = sample.get("expected_evidence_ids")
-    if expected is None or retrieved_ids is None:
+    if not granted or expected is None or retrieved_ids is None:
         retrieval_section: dict = {"evaluated": False, "recalled": None}
     else:
         retrieval_section = {
@@ -169,7 +181,7 @@ def evaluate_sample(
 
     citations = sample.get("answer_citations")
     supplied = sample.get("answer_supplied_ids")
-    if citations is None or supplied is None:
+    if not granted or citations is None or supplied is None:
         grounding_section: dict = {"evaluated": False, "contained": None}
     else:
         supplied_set = set(supplied)
@@ -187,6 +199,7 @@ def evaluate_sample(
         retrieval=retrieval_section,
         grounding=grounding_section,
         usability_notes=sample.get("usability_notes"),
+        recognition_notes=sample.get("recognition_notes"),
     )
 
 

@@ -122,6 +122,35 @@ def test_evaluate_sample_consent_gates_usability():
     assert evaluate_sample(_sample(), False).usable is False
 
 
+def test_non_granted_samples_are_never_scored():
+    for status in ("pending", "declined", "withdrawn"):
+        sample = _sample(
+            consent_status=status,
+            reference_transcript="wheat cattle",
+            asr_transcript="wheat cattle",
+            expected_evidence_ids=["doc-1"],
+            answer_citations=["doc-1"],
+            answer_supplied_ids=["doc-1"],
+        )
+        report = evaluate_sample(sample, True, retrieved_ids=["doc-1"])
+        assert report.usable is False
+        assert report.asr["wer"] is None
+        assert report.asr["cer"] is None
+        assert report.retrieval["evaluated"] is False
+        assert report.grounding["evaluated"] is False
+
+
+def test_optional_context_and_recognition_notes_accepted():
+    sample = _sample(
+        recording_context="field, phone mic, wind",
+        recognition_notes="dropped final syllable",
+    )
+    assert validate_sample(sample) == []
+    report = evaluate_sample(sample, False)
+    assert report.recognition_notes == "dropped final syllable"
+    assert validate_sample(_sample(recording_context=42)) != []
+
+
 def test_evaluate_sample_grounding_containment_false():
     sample = _sample(
         answer_citations=["invented-id"], answer_supplied_ids=["doc-1"]

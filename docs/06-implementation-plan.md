@@ -1,4 +1,25 @@
-# LocaleVoice — Implementation Plan (Milestone 4E)
+# LocaleVoice — Implementation Plan (Milestone 5)
+
+## 0f. Milestone 5 work items — human validation readiness (done)
+
+1. Darija review (`docs/08`): all 15 user-facing messages verified
+   verbatim against code; Context + Final-status fields added; mixed
+   generic-abstention message added; Darija-vs-MSA review guidance.
+   All HUMAN REVIEW PENDING, none approved, no LLM rewrites.
+2. Speech workflow: consent gap closed — non-granted samples are
+   never scored, retrieved, or transcribed even if transcripts
+   linger (2 new tests); optional `recording_context` /
+   `recognition_notes` fields; WER/CER still null without a
+   human-verified reference. Facilitator guide: `docs/12`.
+3. Farmer tasks (`docs/13`): six observable tasks with a capture
+   sheet; no coaching, no personal data.
+4. Browser: checklist extended to 15 steps (social intents added);
+   all BLOCKED, re-confirmed (socket bind denied, no browser).
+5. Knowledge (`docs/14`): coverage map + unsupported topics;
+   alfalfa stays pending-review; no new excerpts.
+6. Regression: 246 passed (244 baseline + 2 consent tests); 7/7 and
+   20/20 evals hold; speech eval 0 samples; live chat smoke OK.
+   Participants: 0. Recordings: 0. WER/CER: null. No commit/push.
 
 ## 0e. Milestone 4E work items — end-to-end validation & knowledge audit (done)
 
@@ -238,7 +259,12 @@ See section 0d.
 
 See section 0e.
 
-### Milestone 5 — First human validation round (single next milestone)
+### Milestone 5 — Human validation readiness (done)
+
+See section 0f. Preparation only: no reviewer, round, or recording
+was completed in this milestone.
+
+### Milestone 6 — First human validation round (single next milestone)
 
 - A person runs the README browser checklist (desktop + mobile),
   including the multi-turn conversation steps, and records PASS/FAIL.
