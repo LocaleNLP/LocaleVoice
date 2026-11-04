@@ -97,6 +97,44 @@ def test_pending_only_match_abstains_with_exclusion_reason():
     )
 
 
+def test_citation_of_ineligible_doc_flagged_invalid(monkeypatch):
+    monkeypatch.setenv("META_CHAT_MODEL", "test-model")
+    corpus = _corpus(
+        _doc("good", "wheat cattle feed"),
+        _doc("pend", "wheat cattle feed", "pending-review"),
+    )
+    chat_fn = Mock(return_value="Answer. [good] [pend]")
+    result = answer_question("wheat for cattle?", corpus, chat_fn=chat_fn)
+    assert result.source_ids_supplied == ["good"]
+    check = result.trace["citation_check"]
+    assert check["contained"] is False
+    assert check["invalid"] == ["pend"]
+
+
+def test_clarification_retry_cannot_use_pending_evidence():
+    from localevoice.knowledge.corpus import load_corpus
+    from localevoice.pipeline.conversation import (
+        AWAITING_CLARIFICATION,
+        respond_to_clarification,
+        start_conversation,
+    )
+
+    corpus = load_corpus("data/knowledge")
+    chat_fn = Mock(return_value="must not be called")
+    conv = start_conversation(
+        "شحال كتسقي الزرع فالسيمانة؟", corpus, chat_fn=chat_fn
+    )
+    respond_to_clarification(conv, "luzerne", corpus, chat_fn=chat_fn)
+    assert conv.status == AWAITING_CLARIFICATION
+    assert conv.evidence == []
+    assert conv.result is not None
+    assert conv.result.source_ids_supplied == []
+    assert "feedipedia-alfalfa" not in (
+        conv.result.trace["selected_evidence_ids"]
+    )
+    chat_fn.assert_not_called()
+
+
 def test_real_corpus_alfalfa_excluded_but_visible():
     from localevoice.knowledge.corpus import load_corpus
 

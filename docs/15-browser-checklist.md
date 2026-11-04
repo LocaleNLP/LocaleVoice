@@ -23,13 +23,16 @@ run in a real browser yet. Result vocabulary: PASS / FAIL / BLOCKED
   record, and typed-question options.
 - Result: NOT TESTED. Notes: _
 
-## Step 2 — WAV upload and transcription
+## Step 2 — Audio upload and transcription
 
-- Preconditions: step 1 PASS; a short real WAV recording ready.
-- Action: upload the WAV; confirm the player appears and the audio
-  plays back; submit for transcription.
+- Preconditions: step 1 PASS; a short real recording ready (WAV,
+  MP3, M4A, or WebM).
+- Action: upload the file; confirm the player appears and the audio
+  plays back; submit for transcription. Repeat with a second
+  format if available.
 - Expected: playback works; app reaches the Review screen with the
-  real ASR transcript. (Live ASR call.)
+  real ASR transcript. Non-conforming input converts silently.
+  (Live ASR call.)
 - Result: NOT TESTED. Notes: _
 
 ## Step 3 — Browser recording

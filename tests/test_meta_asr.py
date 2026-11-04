@@ -14,6 +14,7 @@ from localevoice.providers.meta_asr import (
     ASR_URL,
     MetaASRError,
     transcribe_file,
+    user_message_for,
 )
 
 
@@ -168,3 +169,137 @@ def test_transcribe_accepts_live_turns_shape(tmp_path):
         assert (
             transcribe_file(wav, api_key="k", model="m") == "turns ok"
         )
+
+
+@pytest.mark.parametrize(
+    "status,body,category",
+    [
+        (401, "unauthorized", "auth"),
+        (403, "forbidden", "auth"),
+        (429, "slow down", "rate_limit"),
+        (413, "too big", "too_large"),
+        (
+            400,
+            '{"sessionId":"s1","error":{"message":'
+            '"Unsupported WAV format: channels=2"}}',
+            "invalid_audio",
+        ),
+        (400, "bad request", "provider"),
+        (500, "boom", "provider"),
+    ],
+)
+def test_http_errors_categorized(tmp_path, status, body, category):
+    wav = _wav(tmp_path)
+    with patch(
+        "localevoice.providers.meta_asr.requests.post"
+    ) as mock_post:
+        mock_post.return_value = SimpleNamespace(
+            status_code=status, text=body
+        )
+        with pytest.raises(MetaASRError) as exc_info:
+            transcribe_file(wav, api_key="k", model="m")
+    err = exc_info.value
+    assert err.category == category
+    assert err.status_code == status
+
+
+def test_session_id_extracted_and_reported(tmp_path):
+    wav = _wav(tmp_path)
+    body = '{"sessionId":"voyager/transcribe/xyz","error":{}}'
+    diagnostics: dict = {}
+    with patch(
+        "localevoice.providers.meta_asr.requests.post"
+    ) as mock_post:
+        mock_post.return_value = SimpleNamespace(
+            status_code=400, text=body
+        )
+        with pytest.raises(MetaASRError) as exc_info:
+            transcribe_file(wav, api_key="k", model="m", diagnostics=diagnostics)
+    assert exc_info.value.session_id == "voyager/transcribe/xyz"
+    assert diagnostics["session_id"] == "voyager/transcribe/xyz"
+    assert diagnostics["status_code"] == 400
+
+
+def test_timeout_and_network_categorized(tmp_path):
+    import requests
+
+    wav = _wav(tmp_path)
+    with patch(
+        "localevoice.providers.meta_asr.requests.post"
+    ) as mock_post:
+        mock_post.side_effect = requests.Timeout("slow")
+        with pytest.raises(MetaASRError) as exc_info:
+            transcribe_file(wav, api_key="k", model="m")
+    assert exc_info.value.category == "timeout"
+    with patch(
+        "localevoice.providers.meta_asr.requests.post"
+    ) as mock_post:
+        mock_post.side_effect = requests.ConnectionError("down")
+        with pytest.raises(MetaASRError) as exc_info:
+            transcribe_file(wav, api_key="k", model="m")
+    assert exc_info.value.category == "network"
+
+
+def test_no_speech_and_bad_response_categorized(tmp_path):
+    wav = _wav(tmp_path)
+    with patch(
+        "localevoice.providers.meta_asr.requests.post"
+    ) as mock_post:
+        mock_post.return_value = _ok_response({"transcript": ""})
+        with pytest.raises(MetaASRError) as exc_info:
+            transcribe_file(wav, api_key="k", model="m")
+    assert exc_info.value.category == "no_speech"
+
+    bad = SimpleNamespace(status_code=200, text="nope")
+
+    def _raise():
+        raise ValueError("bad json")
+
+    bad.json = _raise
+    with patch(
+        "localevoice.providers.meta_asr.requests.post"
+    ) as mock_post:
+        mock_post.return_value = bad
+        with pytest.raises(MetaASRError) as exc_info:
+            transcribe_file(wav, api_key="k", model="m")
+    assert exc_info.value.category == "bad_response"
+
+
+def test_config_errors_categorized(tmp_path, monkeypatch):
+    wav = _wav(tmp_path)
+    monkeypatch.delenv("MODEL_API_KEY", raising=False)
+    with pytest.raises(MetaASRError) as exc_info:
+        transcribe_file(wav, model="m")
+    assert exc_info.value.category == "config"
+
+
+def test_success_records_ok_diagnostics(tmp_path):
+    wav = _wav(tmp_path)
+    diagnostics: dict = {}
+    with patch(
+        "localevoice.providers.meta_asr.requests.post"
+    ) as mock_post:
+        mock_post.return_value = _ok_response({"text": "hi"})
+        transcribe_file(wav, api_key="k", model="m", diagnostics=diagnostics)
+    assert diagnostics["category"] == "ok"
+    assert diagnostics["status_code"] == 200
+
+
+def test_user_messages_cover_all_categories_without_secrets():
+    for category in (
+        "invalid_audio",
+        "no_speech",
+        "too_large",
+        "auth",
+        "rate_limit",
+        "timeout",
+        "network",
+        "provider",
+        "bad_response",
+        "config",
+        "anything-unknown",
+    ):
+        message = user_message_for(category)
+        assert isinstance(message, str) and message.strip()
+        assert "MODEL_API_KEY" not in message or category == "config"
+        assert "Bearer" not in message

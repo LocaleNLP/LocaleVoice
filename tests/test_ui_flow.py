@@ -12,6 +12,8 @@ from unittest.mock import Mock
 
 import pytest
 
+from audio_fixtures import make_wav_bytes
+
 from localevoice.knowledge.corpus import Corpus, Document
 from localevoice.pipeline.answer import AnswerResult, LanguageInfo
 from localevoice.providers.meta_asr import MetaASRError
@@ -24,7 +26,8 @@ from localevoice.ui.flow import (
     validate_audio_upload,
 )
 
-WAV_BYTES = (
+WAV_BYTES = make_wav_bytes()
+FAKE_WAV_BYTES = (
     b"RIFF" + b"\x24\x00\x00\x00" + b"WAVE" + b"fake-audio-payload" + b"\x00" * 32
 )
 
@@ -58,13 +61,24 @@ def test_empty_audio_rejected(filename, data):
         validate_audio_upload(filename, data)
 
 
-def test_non_wav_rejected():
-    with pytest.raises(ValueError, match="Only WAV"):
-        validate_audio_upload("question.mp3", WAV_BYTES)
+def test_unsupported_extension_rejected():
+    with pytest.raises(ValueError, match="Unsupported audio format"):
+        validate_audio_upload("question.ogg", WAV_BYTES)
+    with pytest.raises(ValueError, match="Unsupported audio format"):
+        validate_audio_upload("question.exe", WAV_BYTES)
+
+
+def test_compressed_extensions_accepted_at_precheck():
+    mp3 = b"ID3\x04\x00\x00\x00\x00\x00\x00" + b"\x00" * 100
+    assert validate_audio_upload("question.mp3", mp3).filename == "question.mp3"
+    m4a = b"\x00\x00\x00\x18ftypM4A " + b"\x00" * 100
+    assert validate_audio_upload("q.M4A", m4a).filename == "q.M4A"
+    webm = b"\x1a\x45\xdf\xa3" + b"\x00" * 100
+    assert validate_audio_upload("q.webm", webm).filename == "q.webm"
 
 
 def test_non_wav_bytes_rejected():
-    with pytest.raises(ValueError, match="does not look like a WAV"):
+    with pytest.raises(ValueError, match="not a supported audio"):
         validate_audio_upload("question.wav", b"x" * 100)
 
 

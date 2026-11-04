@@ -103,7 +103,9 @@ def main(argv: list[str] | None = None) -> int:
         if sample.get("consent_status") == "granted" and text and text.strip():
             retrieved = [
                 e.document_id
-                for e in retrieve(text, corpus.documents, top_k=3)
+                for e in retrieve(
+                    text, corpus.documents, top_k=3, eligible_only=True
+                )
             ]
         reports.append(
             evaluate_sample(sample, audio_exists, retrieved_ids=retrieved)

@@ -9,6 +9,7 @@ from __future__ import annotations
 
 import os
 import sys
+from hashlib import sha256
 
 sys.path.insert(0, os.path.join(os.path.dirname(__file__), "src"))
 
@@ -26,9 +27,15 @@ from localevoice.pipeline.conversation import (  # noqa: E402
     start_conversation,
 )
 from localevoice.pipeline.intent import UNSUPPORTED_GENERAL  # noqa: E402
+from localevoice.providers.meta_asr import (  # noqa: E402
+    MetaASRError,
+    user_message_for,
+)
+from localevoice.providers import tts as tts_backend  # noqa: E402
+from localevoice.providers.tts import TTSError, speech_text_for  # noqa: E402
 from localevoice.ui.flow import (  # noqa: E402
     safe_html_paragraph,
-    transcribe_upload,
+    transcribe_upload_ex,
     validate_audio_upload,
 )
 
@@ -67,15 +74,28 @@ def reset_to_ask() -> None:
         "reply",
         "failure",
         "failure_detail",
+        "failure_op",
         "audio_name",
+        "transcription_diagnostics",
+        "tts_key",
+        "tts_audio",
+        "tts_mime",
+        "tts_error",
     ):
         st.session_state.pop(key, None)
     st.session_state.stage = "ask"
 
 
-def fail(message: str, detail: str = "") -> None:
+def clear_failure() -> None:
+    st.session_state.pop("failure", None)
+    st.session_state.pop("failure_detail", None)
+    st.session_state.pop("failure_op", None)
+
+
+def fail(message: str, detail: str = "", op: str = "") -> None:
     st.session_state.failure = message
     st.session_state.failure_detail = detail
+    st.session_state.failure_op = op
 
 
 def show_failure() -> None:
@@ -90,8 +110,7 @@ def show_failure() -> None:
     col_a, col_b = st.columns(2)
     with col_a:
         if st.button("↺ Retry", use_container_width=True, key="fail_retry"):
-            st.session_state.pop("failure", None)
-            st.session_state.pop("failure_detail", None)
+            clear_failure()
             st.rerun()
     with col_b:
         if st.button("Start over", use_container_width=True, key="fail_restart"):
@@ -113,33 +132,86 @@ def render_evidence(result: AnswerResult) -> None:
             st.write(f"**Source:** {item['source_url']}")
 
 
-def handle_audio(filename: str | None, data: bytes | None) -> None:
+def _audio_detail_lines(diagnostics: dict | None, error: str) -> str:
+    lines = [error]
+    if diagnostics:
+        original = diagnostics.get("original_format") or {}
+        final = diagnostics.get("normalized_format") or {}
+        provider = diagnostics.get("provider") or {}
+        lines.append(f"source: {diagnostics.get('input_source')}")
+        lines.append(
+            "original: "
+            f"{original.get('container')}/{original.get('codec')} "
+            f"{original.get('sample_rate')}Hz "
+            f"{original.get('channels')}ch "
+            f"{original.get('size_bytes')}B"
+        )
+        lines.append(
+            "normalized: "
+            f"{final.get('sample_rate')}Hz {final.get('channels')}ch "
+            f"converted={diagnostics.get('converted')}"
+        )
+        if provider:
+            lines.append(
+                "provider: "
+                f"status={provider.get('status_code')} "
+                f"session={provider.get('session_id')}"
+            )
+    return "\n".join(str(line) for line in lines)
+
+
+def handle_audio(
+    filename: str | None, data: bytes | None, source: str = "upload"
+) -> None:
+    clear_failure()
     try:
-        upload = validate_audio_upload(filename, data)
+        upload = validate_audio_upload(filename, data, source=source)
     except ValueError as exc:
-        fail(str(exc))
+        fail(str(exc), op="transcription")
         return
     with st.spinner("Transcribing your recording…"):
         try:
-            transcript = transcribe_upload(upload)
+            outcome = transcribe_upload_ex(upload)
+        except MetaASRError as exc:
+            fail(
+                user_message_for(exc.category),
+                _audio_detail_lines(
+                    getattr(exc, "diagnostics", None),
+                    f"{type(exc).__name__} [{exc.category}]: {exc}",
+                ),
+                op="transcription",
+            )
+            return
+        except ValueError as exc:
+            # AudioValidationError from normalization (corrupt, too
+            # long, conversion failed): its own message already
+            # explains the problem, so surface it verbatim instead
+            # of the connection/API-key guidance.
+            fail(str(exc), op="transcription")
+            return
         except Exception as exc:  # noqa: BLE001 - rendered honestly below
             fail(
                 "Transcription failed. Check your connection and API key, "
                 "then retry.",
                 f"{type(exc).__name__}: {exc}",
+                op="transcription",
             )
             return
-    st.session_state.recognized = transcript
-    st.session_state.draft = transcript
+    clear_failure()
+    st.session_state.recognized = outcome.transcript
+    st.session_state.draft = outcome.transcript
+    st.session_state.transcription_diagnostics = outcome.diagnostics
     st.session_state.stage = "review"
 
 
 def handle_confirm() -> None:
+    clear_failure()
     draft = st.session_state.get("draft", "")
     if not draft or not draft.strip():
         fail(
             "The confirmed text is empty. Edit the transcript or type a "
-            "question before asking for an answer."
+            "question before asking for an answer.",
+            op="answer",
         )
         return
     with st.spinner("Finding evidence and generating your answer…"):
@@ -150,6 +222,7 @@ def handle_confirm() -> None:
                 "Answer generation failed. Check your connection and API "
                 "key, then retry.",
                 f"{type(exc).__name__}: {exc}",
+                op="answer",
             )
             return
     result = conversation.result
@@ -157,8 +230,10 @@ def handle_confirm() -> None:
         fail(
             "Answer generation failed and no answer is available.",
             f"{result.error['type']}: {result.error['message']}",
+            op="answer",
         )
         return
+    clear_failure()
     st.session_state.conversation = conversation
     st.session_state.result = result
     if conversation.status == AWAITING_CLARIFICATION:
@@ -168,6 +243,7 @@ def handle_confirm() -> None:
 
 
 def handle_reply() -> None:
+    clear_failure()
     conversation = st.session_state.get("conversation")
     if conversation is None:
         reset_to_ask()
@@ -177,13 +253,14 @@ def handle_reply() -> None:
         try:
             respond_to_clarification(conversation, reply, get_corpus())
         except ValueError as exc:
-            fail(str(exc))
+            fail(str(exc), op="answer")
             return
         except Exception as exc:  # noqa: BLE001 - rendered honestly below
             fail(
                 "Answer generation failed. Check your connection and API "
                 "key, then retry.",
                 f"{type(exc).__name__}: {exc}",
+                op="answer",
             )
             return
     result = conversation.result
@@ -191,12 +268,70 @@ def handle_reply() -> None:
         fail(
             "Answer generation failed and no answer is available.",
             f"{result.error['type']}: {result.error['message']}",
+            op="answer",
         )
         return
     st.session_state.conversation = conversation
     st.session_state.result = result
     if conversation.status == ANSWERED:
         st.session_state.stage = "answer"
+
+
+def render_listen(result: AnswerResult) -> None:
+    """Optional speech playback for a grounded answer (Milestone 6A).
+
+    Shown only for evidence-backed answers: abstention, unsupported,
+    and greeting texts are never sent to speech. Generated audio is
+    cached under a hash of the spoken text for this session only, so
+    replays never re-synthesize; a new answer or conversation clears
+    it. Failures leave the written answer untouched.
+    """
+    text = speech_text_for(result.answer_text)
+    if not text:
+        return
+    key = sha256(text.encode("utf-8")).hexdigest()[:16]
+    if st.session_state.get("tts_key") != key:
+        for stale in ("tts_key", "tts_audio", "tts_mime", "tts_error"):
+            st.session_state.pop(stale, None)
+    cached = st.session_state.get("tts_audio")
+    if cached and st.session_state.get("tts_key") == key:
+        st.audio(cached, format=st.session_state.get("tts_mime", "audio/wav"))
+        return
+    if st.session_state.get("tts_error"):
+        st.caption(f"Speech unavailable: {st.session_state['tts_error']}")
+        if st.button(
+            "Try speech again", use_container_width=True, key="tts_retry"
+        ):
+            st.session_state.pop("tts_error", None)
+            st.rerun()
+        return
+    if st.button(
+        "🔊 Listen to answer", use_container_width=True, key="tts_listen"
+    ):
+        with st.spinner("Generating speech…"):
+            try:
+                episode = tts_backend.get_tts_provider().synthesize(text)
+            except TTSError as exc:
+                # tts_key marks which text this state belongs to, so the
+                # stale-state sweep above keeps (not wipes) the error.
+                st.session_state["tts_key"] = key
+                st.session_state["tts_error"] = str(exc)
+            except Exception:  # noqa: BLE001 - text answer must survive
+                st.session_state["tts_key"] = key
+                st.session_state["tts_error"] = (
+                    "Speech generation failed unexpectedly."
+                )
+            else:
+                if not episode.audio_bytes:
+                    st.session_state["tts_key"] = key
+                    st.session_state["tts_error"] = (
+                        "Speech generation returned no audio."
+                    )
+                else:
+                    st.session_state["tts_key"] = key
+                    st.session_state["tts_audio"] = bytes(episode.audio_bytes)
+                    st.session_state["tts_mime"] = episode.mime_type
+        st.rerun()
 
 
 def render_trace(conversation: Conversation) -> None:
@@ -232,24 +367,38 @@ if "stage" not in st.session_state:
 st.title("LocaleVoice 🌾")
 stage = st.session_state.stage
 
+_PLAYBACK_FORMATS = {
+    ".wav": "audio/wav",
+    ".mp3": "audio/mp3",
+    ".m4a": "audio/mp4",
+    ".webm": "audio/webm",
+}
+
+
+def _playback_format(filename: str) -> str:
+    return _PLAYBACK_FORMATS.get(os.path.splitext(filename.lower())[1], "audio/wav")
+
+
 if stage == "ask":
     st.write(
-        "Ask a farming question in Darija. Upload a short WAV recording, "
-        "record one now, or type your question."
+        "Ask a farming question in Darija. Upload a short recording "
+        "(WAV, MP3, M4A, or WebM), record one now, or type your question."
     )
     st.markdown(
         '<p class="lv-note">Recordings are sent to hosted Meta services for '
         "transcription. Only use recordings you are allowed to share.</p>",
         unsafe_allow_html=True,
     )
-    uploaded = st.file_uploader("Upload a WAV recording", type=["wav"])
+    uploaded = st.file_uploader(
+        "Upload a recording", type=["wav", "mp3", "m4a", "webm"]
+    )
     if uploaded is not None:
-        st.audio(uploaded.getvalue(), format="audio/wav")
+        st.audio(uploaded.getvalue(), format=_playback_format(uploaded.name))
     if uploaded is not None and st.button(
         "Transcribe upload", type="primary", use_container_width=True,
         key="ask_transcribe_upload"
     ):
-        handle_audio(uploaded.name, uploaded.getvalue())
+        handle_audio(uploaded.name, uploaded.getvalue(), source="upload")
         st.rerun()
     st.divider()
     recorded = st.audio_input("Or record now")
@@ -259,6 +408,7 @@ if stage == "ask":
         handle_audio(
             getattr(recorded, "name", None) or "recording.wav",
             recorded.getvalue(),
+            source="microphone",
         )
         st.rerun()
     st.divider()
@@ -405,6 +555,8 @@ elif stage == "answer":
                 )
             else:
                 st.caption("Citation check: no citations found in the answer.")
+        if result.evidence and not result.error:
+            render_listen(result)
         if result.trace:
             with st.expander("Developer diagnostics"):
                 st.json(result.trace)

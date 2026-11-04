@@ -1,4 +1,47 @@
-# LocaleVoice — Implementation Plan (Milestone 5.1)
+# LocaleVoice — Implementation Plan (Milestone 6B)
+
+## 0i. Milestone 6B work items — safety audit + validation readiness (done)
+
+1. Audit found 7 issues; all fixed: temp-dir leak on conversion
+   failure, unmapped ffmpeg timeout, unbounded conversion work,
+   missing truncation check, misdiagnosed normalization errors in
+   the UI, stale retry op-tag, eligibility outside the retrieval
+   layer. Bonus find: `wave` raises bare RuntimeError on garbage.
+2. Eligibility moved into `retrieve(eligible_only=True)`, used by
+   the pipeline, both eval runners, and the speech-eval script;
+   pending docs no longer consume rank slots. 5 new tests
+   (ineligible citation flagged, clarification cannot bypass).
+   Statuses: 3 verified, alfalfa pending (not promoted).
+3. Speech matrix + TTS readiness protocol: `docs/17` (9 scenarios,
+   all PENDING, 0 recordings; 5-gate vendor verification, none
+   selected, null backend stays).
+4. UI review: all 8 points verified (grounded-only Listen, no
+   autoplay, cached replays, cleared state, scoped errors).
+5. Regression: 314 passed (12 new); 7/7 and 20/20 evals hold;
+   speech 0 samples. No live/browser/human validation claimed.
+   No commit/push.
+
+## 0h. Milestone 6A work items — voice responses + upload reliability (done)
+
+1. Diagnosis: uploads failed because validation checked 12 magic
+   bytes only; real-world stereo 44.1/48 kHz WAVs reached Meta,
+   which 400s anything but mono s16le 16/24 kHz (reproduced live).
+   Mic worked because Streamlit records conforming 16 kHz WAV.
+2. Normalization (`audio/normalize.py`): magic-byte sniffing, full
+   WAV header parse, FFmpeg conversion to mono s16le 24 kHz;
+   WAV/MP3/M4A/WebM accepted; 10 MiB / 120 s limits; safe temp
+   files; conforming input passes through byte-identical.
+3. ASR errors categorized (9 categories + config) with user
+   guidance and safe diagnostics (formats, sizes, status, session
+   id); stale failure state fixed (cleared at op start/success,
+   op-tagged) with 6 AppTest regressions.
+4. TTS: vendor-neutral interface + null backend (no provider
+   selected — none verified for Darija; comparison in docs/16).
+   Answer screen gained an opt-in Listen control (grounded answers
+   only, session-scoped cache, failures keep the text).
+5. Regression: 302 passed (48 new); 7/7 and 20/20 evals hold;
+   live loop-closure verified (former 400 now 200). No browser
+   run, no TTS vendor, no human validation. No commit/push.
 
 ## 0g. Milestone 5.1 work items — pre-validation safety fixes (done)
 

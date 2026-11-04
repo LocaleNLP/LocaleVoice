@@ -91,11 +91,12 @@ def test_trace_records_rejection_reasons():
     considered = result.trace["documents_considered"]
     reasons = {d: info["reason"] for d, info in considered.items()}
     # Alfalfa matches "protein" but is pending-review: excluded from
-    # evidence, still visible in diagnostics (Milestone 5.1).
+    # evidence, still visible in diagnostics (Milestone 5.1). Since 6B
+    # it no longer consumes a rank slot, so olive-cake fills top_k=1.
     assert "excluded: review_status=pending-review" in reasons[
         "feedipedia-alfalfa"
     ]
-    assert "beyond top_k" in reasons["feedipedia-olive-cake"]
+    assert reasons["feedipedia-olive-cake"] == "selected"
     assert "beyond top_k" in reasons["feedipedia-wheat-grain"]
     assert reasons["feedipedia-cowpea-seeds"] == "no matched terms"
 

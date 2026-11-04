@@ -13,7 +13,7 @@ import re
 import unicodedata
 from dataclasses import dataclass
 
-from localevoice.knowledge.corpus import Document
+from localevoice.knowledge.corpus import Document, is_answer_eligible
 
 # Documented search-only normalization for Arabic script (conservative):
 # - NFKC compatibility fold, strip Arabic diacritics (tashkeel) and tatweel.
@@ -150,6 +150,7 @@ def retrieve(
     documents: list[Document],
     top_k: int = 3,
     weighting: str = "count",
+    eligible_only: bool = False,
 ) -> list[Evidence]:
     """Rank documents against the query; return at most top_k with score > 0.
 
@@ -162,11 +163,19 @@ def retrieve(
     the matched-term count. weighting="idf" sorts by IDF-weighted sum
     so distinctive agricultural terms outrank ubiquitous ones; score is
     then a rounded weighted sum rather than a count.
+
+    eligible_only=True restricts ranking to verified excerpts
+    (review-status enforcement, Milestones 5.1/6B): pending-review,
+    rejected, and archived documents cannot occupy rank slots. All
+    farmer-facing and evaluation consumers must pass True; the
+    default False preserves the raw ranking for diagnostics.
     """
     if top_k < 1:
         raise ValueError("top_k must be >= 1")
     if weighting not in ("count", "idf"):
         raise ValueError("weighting must be 'count' or 'idf'")
+    if eligible_only:
+        documents = [d for d in documents if is_answer_eligible(d)]
     query_tokens = tokenize(query)
     if not query_tokens:
         return []

@@ -94,7 +94,9 @@ def evaluate_item(
     Live mode additionally generates an answer and checks that citations
     stay within supplied source IDs.
     """
-    found = retrieve(fixture.question, corpus.documents, top_k=top_k)
+    found = retrieve(
+        fixture.question, corpus.documents, top_k=top_k, eligible_only=True
+    )
     eligible = {d.id for d in corpus.documents if is_answer_eligible(d)}
     relevant = [
         e for e in found if e.score >= min_score and e.document_id in eligible

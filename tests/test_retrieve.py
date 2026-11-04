@@ -150,6 +150,55 @@ def test_multiple_relevant_excerpts_returned():
     assert all(e.score == 1 for e in found)
 
 
+def _doc_with_status(doc_id, content, status):
+    doc = _doc(doc_id, content)
+    return Document(
+        id=doc.id,
+        title=doc.title,
+        source_name=doc.source_name,
+        source_url=doc.source_url,
+        category=doc.category,
+        crop_or_species=doc.crop_or_species,
+        excerpt=doc.excerpt,
+        language=doc.language,
+        date_accessed=doc.date_accessed,
+        review_status=status,
+        keywords=doc.keywords,
+    )
+
+
+def test_eligible_only_excludes_non_verified_statuses():
+    docs = [
+        _doc_with_status("good", "wheat cattle", "verified-excerpt"),
+        _doc_with_status("pend", "wheat cattle", "pending-review"),
+        _doc_with_status("rej", "wheat cattle", "rejected"),
+        _doc_with_status("arch", "wheat cattle", "archived"),
+    ]
+    found = retrieve("wheat cattle", docs, eligible_only=True)
+    assert [e.document_id for e in found] == ["good"]
+
+
+def test_default_ranking_preserved_for_diagnostics():
+    docs = [
+        _doc_with_status("good", "wheat cattle", "verified-excerpt"),
+        _doc_with_status("pend", "wheat cattle", "pending-review"),
+    ]
+    found = retrieve("wheat cattle", docs)
+    assert {e.document_id for e in found} == {"good", "pend"}
+
+
+def test_eligible_only_frees_rank_slots():
+    docs = [
+        _doc_with_status("pend", "wheat cattle feed", "pending-review"),
+        _doc_with_status("good", "wheat", "verified-excerpt"),
+    ]
+    # Without the filter, pend outranks good for top_k=1.
+    assert retrieve("wheat cattle feed", docs, top_k=1)[0].document_id == "pend"
+    assert retrieve("wheat cattle feed", docs, top_k=1, eligible_only=True)[
+        0
+    ].document_id == "good"
+
+
 def test_score_document_empty_query_tokens():
     assert score_document([], _doc("a", "wheat")) == (0, [])
 

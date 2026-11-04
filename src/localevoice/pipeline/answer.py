@@ -150,7 +150,7 @@ def answer_question(
     lang = infer_language(question, language)
     intent_info = classify_intent(question)
     query_tokens = tokenize(question)
-    found = retrieve(question, corpus.documents, top_k=top_k)
+    found = retrieve(question, corpus.documents, top_k=top_k, eligible_only=True)
     eligible = {d.id for d in corpus.documents if is_answer_eligible(d)}
     relevant = [
         e for e in found if e.score >= min_score and e.document_id in eligible

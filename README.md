@@ -28,9 +28,11 @@ streamlit run app.py
 ```
 
 Then open the local URL Streamlit prints (usually
-http://localhost:8501) in your browser. Upload a short WAV recording
-(or record in the browser, or type a question), review the transcript,
-and confirm to get a grounded answer.
+http://localhost:8501) in your browser. Upload a short recording
+(WAV, MP3, M4A, or WebM; converted automatically when needed —
+requires FFmpeg for non-conforming input), or record in the browser,
+or type a question. Then review the transcript and confirm to get a
+grounded answer, optionally with spoken playback.
 
 ## Browser verification checklist (manual, local)
 
@@ -52,8 +54,9 @@ as PASS/FAIL/BLOCKED/NOT TESTED with the observed behavior.
 python -m pytest -q
 ```
 
-All 254 unit tests mock the SDK/HTTP boundary, so this needs no API key
-and no network access.
+All 314 unit tests mock the SDK/HTTP boundary, so this needs no API key
+and no network access. Audio-format tests use synthesized tones and
+skip compressed-container cases when FFmpeg is unavailable.
 
 ## Corpus validation (offline)
 

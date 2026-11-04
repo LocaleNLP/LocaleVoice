@@ -8,50 +8,115 @@ The UI layer (app.py) handles widgets and session state only.
 from __future__ import annotations
 
 import html
+import inspect
 import os
-import tempfile
 from collections.abc import Callable
-from dataclasses import dataclass
+from dataclasses import asdict, dataclass
 
+from localevoice.audio.normalize import (
+    MAX_UPLOAD_BYTES,
+    SUPPORTED_EXTENSIONS,
+    NormalizedAudio,
+    sniff_container,
+)
 from localevoice.knowledge.corpus import Corpus
 from localevoice.pipeline.answer import AnswerResult, answer_question
 from localevoice.providers.meta_asr import transcribe_file
 
-MAX_AUDIO_BYTES = 10 * 1024 * 1024  # 10 MiB upload cap
+MAX_AUDIO_BYTES = MAX_UPLOAD_BYTES  # 10 MiB upload cap (single source above)
 
 
 @dataclass(frozen=True)
 class ValidatedUpload:
     filename: str
     data: bytes
+    source: str = "upload"  # "upload" or "microphone", for diagnostics only
+
+
+@dataclass(frozen=True)
+class TranscriptionResult:
+    transcript: str
+    diagnostics: dict  # safe metadata only: formats, sizes, status, ids
 
 
 def validate_audio_upload(
-    filename: str | None, data: bytes | None, max_bytes: int = MAX_AUDIO_BYTES
+    filename: str | None,
+    data: bytes | None,
+    max_bytes: int = MAX_AUDIO_BYTES,
+    source: str = "upload",
 ) -> ValidatedUpload:
-    """Validate an uploaded recording before any provider call.
+    """Fast pre-check of a recording before normalization.
 
-    Accepted format: WAV only (the ASR provider requires a `.wav` file).
-    Raises ValueError with a user-facing message on any problem.
+    Accepts WAV, MP3, M4A, and WebM by extension; the actual container
+    is detected from magic bytes. Deep validation (codec, rate,
+    channels, duration) happens in NormalizedAudio. Raises ValueError
+    with a user-facing message on any problem.
     """
     if not filename or data is None or len(data) == 0:
-        raise ValueError("No audio received. Upload a WAV recording and retry.")
-    if not filename.lower().endswith(".wav"):
+        raise ValueError("No audio received. Upload a recording and retry.")
+    ext = os.path.splitext(filename.lower())[1]
+    if ext not in SUPPORTED_EXTENSIONS:
         raise ValueError(
-            f"Only WAV files are supported, got: {filename}. "
-            "Please upload a .wav recording."
+            f"Unsupported audio format ({ext or 'no extension'}). "
+            "Upload WAV, MP3, M4A, or WebM."
         )
     if len(data) > max_bytes:
         raise ValueError(
             f"Recording is too large ({len(data) / 1024 / 1024:.1f} MiB). "
             f"Please keep it under {max_bytes / 1024 / 1024:.0f} MiB."
         )
-    if len(data) < 44 or data[0:4] != b"RIFF" or data[8:12] != b"WAVE":
+    container = sniff_container(data)
+    if container in ("unknown", "ogg"):
         raise ValueError(
-            "This file does not look like a WAV recording. "
-            "Please upload a valid .wav file."
+            "This file is not a supported audio recording. Upload "
+            "WAV, MP3, M4A, or WebM."
         )
-    return ValidatedUpload(filename=filename, data=data)
+    return ValidatedUpload(filename=filename, data=data, source=source)
+
+
+def transcribe_upload_ex(
+    upload: ValidatedUpload,
+    transcribe_fn: Callable[..., str] = transcribe_file,
+    language_bias: str | None = None,
+) -> TranscriptionResult:
+    """Normalize then transcribe; return the transcript with diagnostics.
+
+    Diagnostics carry safe metadata only (source, formats, sizes,
+    provider status/session id) — never audio, transcripts, or keys.
+    Provider and validation errors propagate unchanged for the UI.
+    """
+    provider_info: dict = {}
+    try:
+        accepts_diagnostics = "diagnostics" in inspect.signature(
+            transcribe_fn
+        ).parameters
+    except (TypeError, ValueError):
+        accepts_diagnostics = False
+    with NormalizedAudio(upload.data, upload.filename) as normalized:
+        kwargs: dict = {"language_bias": language_bias}
+        if accepts_diagnostics:
+            kwargs["diagnostics"] = provider_info
+        try:
+            transcript = transcribe_fn(normalized.path, **kwargs)
+        except Exception as exc:
+            # The provider failed after normalization: attach what was
+            # sent so the UI can show it (safe metadata only).
+            exc.diagnostics = {  # type: ignore[attr-defined]
+                "input_source": upload.source,
+                "original_format": asdict(normalized.original),
+                "normalized_format": asdict(normalized.final),
+                "converted": normalized.converted,
+                "provider": dict(provider_info),
+            }
+            raise
+        diagnostics = {
+            "input_source": upload.source,
+            "original_format": asdict(normalized.original),
+            "normalized_format": asdict(normalized.final),
+            "converted": normalized.converted,
+            "provider": provider_info,
+        }
+    return TranscriptionResult(transcript=transcript, diagnostics=diagnostics)
 
 
 def transcribe_upload(
@@ -64,23 +129,9 @@ def transcribe_upload(
     Provider errors (MetaASRError, FileNotFoundError, ValueError) propagate
     unchanged for the UI to render honestly.
     """
-    fd, path = tempfile.mkstemp(suffix=".wav", prefix="localevoice-")
-    try:
-        try:
-            with os.fdopen(fd, "wb") as fh:
-                fh.write(upload.data)
-        except BaseException:
-            try:
-                os.close(fd)
-            except OSError:
-                pass
-            raise
-        return transcribe_fn(path, language_bias=language_bias)
-    finally:
-        try:
-            os.remove(path)
-        except OSError:
-            pass
+    return transcribe_upload_ex(
+        upload, transcribe_fn=transcribe_fn, language_bias=language_bias
+    ).transcript
 
 
 def safe_html_paragraph(text: str, css_class: str) -> str:

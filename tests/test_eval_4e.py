@@ -15,7 +15,7 @@ from unittest.mock import Mock
 import pytest
 
 from localevoice.evaluation.runner import load_fixtures
-from localevoice.knowledge.corpus import is_answer_eligible, load_corpus
+from localevoice.knowledge.corpus import load_corpus
 from localevoice.knowledge.retrieve import retrieve
 from localevoice.pipeline.answer import answer_question, find_citations
 
@@ -56,9 +56,8 @@ def test_set_has_twenty_items(raw_items):
 def _eligible_retrieved(corpus, question):
     # Same eligibility-aware view as the runner and the pipeline (5.1):
     # pending-review matches never count as retrieved evidence.
-    eligible = {d.id for d in corpus.documents if is_answer_eligible(d)}
-    found = retrieve(question, corpus.documents, top_k=3)
-    return [e.document_id for e in found if e.score >= 1 and e.document_id in eligible]
+    found = retrieve(question, corpus.documents, top_k=3, eligible_only=True)
+    return [e.document_id for e in found if e.score >= 1]
 
 
 def test_offline_recall_and_gating(corpus, raw_items):
