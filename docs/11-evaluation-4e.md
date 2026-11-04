@@ -15,24 +15,25 @@ data/evaluation/questions_4e.json`
 - Multi-doc items retrieving both docs: **2/2**.
 - Clarification categories: **5/5** correct.
 - Intent labels: **20/20** as documented.
-- Model-call discipline (mocked): 10 called / 10 not called, as
-  documented — social, unsupported, clarification, and abstain paths
-  never reach the model.
+- Model-call discipline (mocked): 8 called / 12 not called, as
+  documented — social, unsupported, clarification, abstain, and
+  pending-review paths never reach the model.
 
-## Precision note (1 item)
+## Precision note (resolved by 5.1 enforcement)
 
-`4e-multi-wheat-olive-energy` retrieved wheat + olive (expected) plus
-alfalfa via the genuine lexical match "cattle" ("Cattle highly relish
-it" in the alfalfa excerpt). This is correct lexical behavior, not a
-ranking bug, but it means 19/20 items retrieve exactly the expected
-set. Any future precision metric must account for shared livestock
-vocabulary across excerpts.
+In 4E, `4e-multi-wheat-olive-energy` retrieved wheat + olive
+(expected) plus alfalfa via the genuine lexical match "cattle". Since
+5.1, pending-review excerpts are excluded from evidence, so all 20
+items now retrieve exactly the expected set. Any future precision
+metric must still account for shared livestock vocabulary across
+excerpts.
 
 ## Abstention correctness
 
-All 10 no-evidence items (5 clarification, 2 unsupported, 1 treatment,
-1 uncovered-agricultural, 1 social) resolve without a model call and
-without fabricated content: 0 false-positive answers.
+All 12 no-evidence items (5 clarification, 2 unsupported, 1
+treatment, 1 uncovered-agricultural, 1 social, 2 pending-review)
+resolve without a model call and without fabricated content: 0
+false-positive answers.
 
 ## Live provider results (2026-11-04, labeled)
 
@@ -57,4 +58,4 @@ without fabricated content: 0 false-positive answers.
   validates the pipeline wiring, not coverage of real farmer needs.
 - Darija wording (intent responses, clarification, live answer) is
   HUMAN REVIEW PENDING (`docs/08`).
-- No browser session has run (README checklist, 14 steps, BLOCKED).
+- No browser session has run (`docs/15-browser-checklist.md`, 15 steps, BLOCKED).

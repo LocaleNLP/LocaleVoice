@@ -34,55 +34,17 @@ and confirm to get a grounded answer.
 
 ## Browser verification checklist (manual, local)
 
-Automated UI flows run headlessly in `tests/test_app.py`, but they are
-not browser verification. On your machine, with a real browser:
-
-1. `streamlit run app.py` — app loads with no errors; title shows.
-2. Upload a short WAV — the player appears and the audio plays back;
-   Transcribe reaches Review. (Live ASR call.)
-3. Record in the browser — the widget plays back; confirm the recording
-   transcribes (bytes are validated as WAV; anything else gets an
-   honest re-upload message). (Live ASR call.)
-4. Review — recognized text is read-only, corrected text is editable;
-   Confirm reaches Answer, or the One-question screen when context is
-   missing. Confirming empty text shows a clear message and stays.
-5. Typed fallback — type a question and continue; confirm, then answer
-   or clarify as appropriate.
-6. Sources — each evidence expander shows ID, title, publisher, score,
-   matched terms, and source URL.
-7. No-evidence — ask something off-corpus (e.g. capital of Morocco);
-   the warning shows and no answer is fabricated. (No live call.)
-8. Failures — try invalid content, an oversize file, and (optionally)
-   an invalid key: each shows a clear message with Retry / Start-over.
-9. Layout — repeat steps 2–7 in a narrow/mobile-sized window.
-10. Clarification turn — type `شحال كتسقي الزرع فالسيمانة؟`, confirm,
-    and check the "One question" screen shows the original question
-    plus the conversation so far.
-11. Reply with context — answer `القمح`; an evidence-backed answer
-    with the wheat source should appear. (Live chat call.)
-12. Reply without evidence — restart, ask about rainfall, reply with a
-    location; the still-missing note should show and the conversation
-    should stay open. Reply a second time to confirm multiple
-    responses accumulate, then Finish and Start over to confirm a
-    clean restart.
-13. Trace — on the Answer screen, the Conversation expander shows every
-    turn in order.
-14. Diagnostics — on the Answer screen, the Developer diagnostics
-    expander shows the retrieval/evidence trace (intent, terms,
-    scores, selected evidence, rejection reasons, model invocation,
-    citation check) with no secrets.
-15. Social intents — type `السلام عليكم`, then `شكرا بزاف`; each
-    gets an instant natural reply with no sources and no model call.
-    (No live call.)
-
-Record each step as PASS/FAIL/BLOCKED/NOT TESTED with the observed
-behavior.
+The full 15-step procedure — preconditions, exact action, expected
+result, result field, and notes for every check — lives in
+`docs/15-browser-checklist.md`. Automated UI flows run headlessly in
+`tests/test_app.py`, but they are not browser verification.
 
 Verification status (re-confirmed 2026-11-04): all 15 steps are
 BLOCKED in the development sandbox — `streamlit run` fails with
 `PermissionError: [Errno 1]` on socket bind, and no browser or
 automation binary is available; none has been run in a real browser
-yet. Steps 2, 3, and 11 make live Meta API calls.
+yet. Steps 2, 3, and 11 make live Meta API calls. Record each step
+as PASS/FAIL/BLOCKED/NOT TESTED with the observed behavior.
 
 ## Tests (no network, no paid calls)
 
@@ -90,7 +52,7 @@ yet. Steps 2, 3, and 11 make live Meta API calls.
 python -m pytest -q
 ```
 
-All 246 unit tests mock the SDK/HTTP boundary, so this needs no API key
+All 254 unit tests mock the SDK/HTTP boundary, so this needs no API key
 and no network access.
 
 ## Corpus validation (offline)

@@ -107,6 +107,10 @@ silently re-transcribed.
   browser checklist corrected to 13 steps, all BLOCKED here; Darija
   wording extracted for review (all PENDING); speech workflow ready
   with zero samples; no human round run yet.
+- Milestone 5.1 status: browser checklist restructured with
+  preconditions/actions/expected/results and extended to 15 steps
+  (`docs/15-browser-checklist.md`), all BLOCKED here; review-status
+  enforcement excludes pending-review excerpts from answers.
 
 ## 6. Non-goals
 

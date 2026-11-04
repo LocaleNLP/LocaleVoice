@@ -7,7 +7,7 @@ import time
 from collections.abc import Callable
 from dataclasses import asdict, dataclass, field
 
-from localevoice.knowledge.corpus import Corpus, CorpusError
+from localevoice.knowledge.corpus import Corpus, CorpusError, is_answer_eligible
 from localevoice.knowledge.retrieve import (
     Evidence,
     normalize_for_search,
@@ -151,7 +151,10 @@ def answer_question(
     intent_info = classify_intent(question)
     query_tokens = tokenize(question)
     found = retrieve(question, corpus.documents, top_k=top_k)
-    relevant = [e for e in found if e.score >= min_score]
+    eligible = {d.id for d in corpus.documents if is_answer_eligible(d)}
+    relevant = [
+        e for e in found if e.score >= min_score and e.document_id in eligible
+    ]
     selected_ids = [e.document_id for e in relevant]
     found_ids = {e.document_id for e in found}
 
@@ -160,6 +163,11 @@ def answer_question(
         doc_score, matched = score_document(query_tokens, doc)
         if doc.id in selected_ids:
             reason = "selected"
+        elif doc_score > 0 and doc.id not in eligible:
+            reason = (
+                f"excluded: review_status={doc.review_status} "
+                "(not farmer-facing eligible)"
+            )
         elif doc_score <= 0:
             reason = "no matched terms"
         elif doc.id in found_ids:

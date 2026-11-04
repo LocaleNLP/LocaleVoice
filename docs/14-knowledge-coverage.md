@@ -15,9 +15,10 @@ milestone.
 
 Alfalfa stays `pending-review` until a second person confirms the
 excerpt is a fair, in-context representation (provenance alone does
-not clear it). It remains retrievable — retrieval does not filter on
-review status — so validation answers citing it must be checked
-against the source page listed in `source_url`.
+not clear it). Since 5.1, pending-review excerpts are excluded from
+answer evidence: alfalfa matches still appear in developer
+diagnostics with an explicit exclusion reason, but the pipeline
+abstains instead of answering from them.
 
 ## Explicitly unsupported (must abstain or clarify)
 

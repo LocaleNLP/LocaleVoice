@@ -7,7 +7,7 @@ import os
 from collections.abc import Callable
 from dataclasses import asdict, dataclass, field
 
-from localevoice.knowledge.corpus import Corpus
+from localevoice.knowledge.corpus import Corpus, is_answer_eligible
 from localevoice.knowledge.retrieve import retrieve
 from localevoice.pipeline.answer import (
     answer_question,
@@ -95,7 +95,10 @@ def evaluate_item(
     stay within supplied source IDs.
     """
     found = retrieve(fixture.question, corpus.documents, top_k=top_k)
-    relevant = [e for e in found if e.score >= min_score]
+    eligible = {d.id for d in corpus.documents if is_answer_eligible(d)}
+    relevant = [
+        e for e in found if e.score >= min_score and e.document_id in eligible
+    ]
     retrieved_ids = [e.document_id for e in relevant]
     insufficient = not relevant
     expected_relevant = set(fixture.relevant_doc_ids)

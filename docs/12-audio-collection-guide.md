@@ -15,20 +15,72 @@ exist yet; do not invent any.
 
 ## Consent script (read aloud, in Darija)
 
-> "We are testing a farming voice assistant. With your permission I
-> will record your farming question to check how well the system
-> understands speech. The recording stays on this machine, is used
-> only for prototype evaluation, and is never shared. You can refuse,
-> stop at any time, or ask me to delete your recording afterwards —
-> no reason needed. Do you agree?"
+The script must communicate all seven points: (1) purpose, (2) what
+data is collected, (3) where it is stored, (4) who can access it,
+(5) retention and deletion, (6) voluntary participation, (7) right
+to decline or withdraw. No legal-compliance claim is made here;
+this is a prototype-evaluation consent, not a legal instrument.
+
+English reference:
+
+> "We are testing a farming voice assistant. [purpose] With your
+> permission I will record your farming question — only your voice
+> asking the question, nothing else. [what] The recording stays on
+> this machine only. [where] Only I, the facilitator, can listen to
+> it here; the only other processing is one automatic transcription
+> by the hosted speech service when we evaluate. [who] I will delete
+> the recording once my evaluation notes are done, unless you allow
+> longer storage; you can ask me to delete it at any time and I will
+> do so immediately. [retention/deletion] Taking part is completely
+> voluntary. [voluntary] You can refuse, stop at any time, or
+> withdraw afterwards — no reason needed, and it changes nothing
+> about how we treat you. [decline/withdraw] Do you agree?"
+
+Darija version — **HUMAN REVIEW PENDING. Do not use with
+participants until a competent Darija reviewer approves it.** Until
+then, explain the seven points above in the participant's language
+from the English reference.
+
+> "كنجربو مساعد صوتي للفلاحة. إلا وافقتي، غنسجل السؤال الفلاحي
+> ديالك — غير الصوت ديالك وانت كتسول، حتى حاجة أخرى. التسجيل
+> كيبقى فهاد الحاسوب غير. غير أنا لي نسمع ليه هنا؛ المعالجة
+> الوحيدة الأخرى هي تحويل الصوت لنص مرة وحدة ملي نديرو التقييم.
+> غنمسح التسجيل ملي نكمل الملاحظات ديال التقييم، إلا سمحتي نخليه
+> كتر؛ وتقدر تطلب مني نمسحو فأي وقت وغنمسحو فالحين. المشاركة
+> تطوعية تماما. تقدر ترفض، ولا تحبس فأي وقت، ولا تراجع الموافقة
+> من بعد — بلا ما تعطي حتى سبب، وما غيبدل حتى حاجة. واش موافق؟"
 
 - Agreement → `consent_status: "granted"`, `permitted_use:
   "prototype evaluation only, no redistribution"`.
 - Refusal or silence → do not record. No record is created.
-- Withdrawal later → delete the WAV file and clear
-  `reference_transcript`, `asr_transcript`, and
-  `corrected_transcript` from the record; set `consent_status:
-  "withdrawn"`.
+- Withdrawal later → follow the deletion procedure below.
+
+## Withdrawal and deletion procedure
+
+When a participant withdraws (during or after the session), the
+facilitator — not automation — performs these steps in order.
+Nothing is deleted automatically.
+
+1. In `samples.json`, set the sample's `consent_status` to
+   `"withdrawn"`. From this moment the code refuses to transcribe,
+   score, or retrieve over it (`test_non_granted_samples_are_never_scored`).
+2. Delete the audio file from `audio/`.
+3. Clear `reference_transcript`, `asr_transcript`, and
+   `corrected_transcript` (set to `null`). Keep `sample_id`,
+   `topic`, and consent fields: the record now proves a sample
+   existed and was withdrawn, without retaining speech content.
+4. Check `usability_notes` and `recognition_notes`: remove any
+   verbatim participant speech pasted there. Notes must describe
+   errors ("dropped final syllable"), never quote the speaker.
+5. Delete any saved evaluation reports that predate the withdrawal
+   (they may contain scores derived from the sample) and re-run
+   `python scripts/evaluate_speech.py` to confirm the sample now
+   reports `usable=false`, `wer=null`, `cer=null`.
+6. Confirm to the participant that everything is deleted.
+
+Evaluation reports never contain audio or transcript text — only
+sample IDs, presence flags, scores, and facilitator notes — so a
+regenerated report cannot leak withdrawn speech content.
 
 ## Recording
 

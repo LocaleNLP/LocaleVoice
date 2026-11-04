@@ -1,4 +1,24 @@
-# LocaleVoice — Implementation Plan (Milestone 5)
+# LocaleVoice — Implementation Plan (Milestone 5.1)
+
+## 0g. Milestone 5.1 work items — pre-validation safety fixes (done)
+
+1. Review-status enforcement: only `verified-excerpt` docs are
+   eligible as answer evidence (`is_answer_eligible`, fail closed);
+   pending-review/rejected/archived matches are excluded in
+   `answer_question` and the eval runner, stay visible in
+   diagnostics with explicit exclusion reasons. 8 new tests; alfalfa
+   entry kept, now abstains. Fixtures updated (m2-eval-1.2.0,
+   m4e-eval-1.1.0): alfalfa items expect abstention, cowpea/alfalfa
+   multi replaced by cowpea/wheat.
+2. Consent script (`docs/12`): seven points made explicit; Darija
+   version added, HUMAN REVIEW PENDING; no legal claims. Withdrawal
+   and deletion procedure documented step by step (manual, nothing
+   automatic); reports carry no transcript content.
+3. Browser checklist restructured into
+   `docs/15-browser-checklist.md` (preconditions/action/expected/
+   result/notes × 15); all NOT TESTED here (sandbox BLOCKED).
+4. Regression: 254 passed; 7/7 and 20/20 evals hold; speech 0
+   samples; no browser/human validation claimed. No commit/push.
 
 ## 0f. Milestone 5 work items — human validation readiness (done)
 
@@ -266,8 +286,9 @@ was completed in this milestone.
 
 ### Milestone 6 — First human validation round (single next milestone)
 
-- A person runs the README browser checklist (desktop + mobile),
-  including the multi-turn conversation steps, and records PASS/FAIL.
+- A person runs the browser checklist (`docs/15-browser-checklist.md`,
+  desktop + mobile), including the multi-turn conversation steps, and
+  records PASS/FAIL.
 - Darija speaker completes `docs/08-darija-language-review.md`.
 - Validation round per `docs/09-human-validation-protocol.md`.
 - First consented Darija recordings collected per

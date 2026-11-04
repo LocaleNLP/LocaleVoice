@@ -90,7 +90,11 @@ def test_trace_records_rejection_reasons():
     )
     considered = result.trace["documents_considered"]
     reasons = {d: info["reason"] for d, info in considered.items()}
-    assert reasons["feedipedia-alfalfa"] == "selected"
+    # Alfalfa matches "protein" but is pending-review: excluded from
+    # evidence, still visible in diagnostics (Milestone 5.1).
+    assert "excluded: review_status=pending-review" in reasons[
+        "feedipedia-alfalfa"
+    ]
     assert "beyond top_k" in reasons["feedipedia-olive-cake"]
     assert "beyond top_k" in reasons["feedipedia-wheat-grain"]
     assert reasons["feedipedia-cowpea-seeds"] == "no matched terms"

@@ -107,6 +107,18 @@ class Corpus:
         return [d.id for d in self.documents]
 
 
+# Review-status enforcement (Milestone 5.1): only verified excerpts may
+# back farmer-facing answers. pending-review / rejected / archived (and
+# any unknown status — fail closed) are excluded from evidence
+# selection. Diagnostics may still display them, clearly marked.
+ELIGIBLE_REVIEW_STATUS = "verified-excerpt"
+
+
+def is_answer_eligible(doc: Document) -> bool:
+    """True only for verified excerpts eligible as answer evidence."""
+    return doc.review_status == ELIGIBLE_REVIEW_STATUS
+
+
 def load_corpus(corpus_dir: str) -> Corpus:
     """Load and validate the corpus in `corpus_dir`.
 

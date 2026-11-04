@@ -15,7 +15,7 @@ from unittest.mock import Mock
 import pytest
 
 from localevoice.evaluation.runner import load_fixtures
-from localevoice.knowledge.corpus import load_corpus
+from localevoice.knowledge.corpus import is_answer_eligible, load_corpus
 from localevoice.knowledge.retrieve import retrieve
 from localevoice.pipeline.answer import answer_question, find_citations
 
@@ -53,10 +53,17 @@ def test_set_has_twenty_items(raw_items):
     assert len({it["id"] for it in raw_items}) == 20
 
 
+def _eligible_retrieved(corpus, question):
+    # Same eligibility-aware view as the runner and the pipeline (5.1):
+    # pending-review matches never count as retrieved evidence.
+    eligible = {d.id for d in corpus.documents if is_answer_eligible(d)}
+    found = retrieve(question, corpus.documents, top_k=3)
+    return [e.document_id for e in found if e.score >= 1 and e.document_id in eligible]
+
+
 def test_offline_recall_and_gating(corpus, raw_items):
     for it in raw_items:
-        found = retrieve(it["question"], corpus.documents, top_k=3)
-        retrieved = [e.document_id for e in found if e.score >= 1]
+        retrieved = _eligible_retrieved(corpus, it["question"])
         assert set(it["relevant_doc_ids"]) <= set(retrieved), it["id"]
         assert (not retrieved) == it["expect_insufficient"], it["id"]
 
@@ -65,8 +72,7 @@ def test_multi_doc_items_retrieve_both(corpus, raw_items):
     multi = [it for it in raw_items if it["category"] == "multi-doc"]
     assert len(multi) == 2
     for it in multi:
-        found = retrieve(it["question"], corpus.documents, top_k=3)
-        retrieved = {e.document_id for e in found if e.score >= 1}
+        retrieved = set(_eligible_retrieved(corpus, it["question"]))
         assert set(it["relevant_doc_ids"]) <= retrieved, it["id"]
 
 
@@ -88,5 +94,5 @@ def test_pipeline_expectations(monkeypatch, corpus, raw_items):
 
 def test_fixtures_load_through_runner():
     metadata, fixtures = load_fixtures(FIXTURES)
-    assert metadata["fixtures_version"] == "m4e-eval-1.0.0"
+    assert metadata["fixtures_version"] == "m4e-eval-1.1.0"
     assert len(fixtures) == 20
