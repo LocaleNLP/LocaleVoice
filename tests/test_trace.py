@@ -16,6 +16,8 @@ def test_validate_citations_contained_and_invalid():
         "supplied": ["doc-1", "doc-2"],
         "contained": True,
         "invalid": [],
+        "malformed": [],
+        "syntax_ok": True,
     }
     bad = validate_citations("A. [doc-1] B. [invented]", ["doc-1"])
     assert bad["contained"] is False

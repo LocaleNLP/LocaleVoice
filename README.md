@@ -54,7 +54,7 @@ as PASS/FAIL/BLOCKED/NOT TESTED with the observed behavior.
 python -m pytest -q
 ```
 
-All 314 unit tests mock the SDK/HTTP boundary, so this needs no API key
+All 335 unit tests mock the SDK/HTTP boundary, so this needs no API key
 and no network access. Audio-format tests use synthesized tones and
 skip compressed-container cases when FFmpeg is unavailable.
 

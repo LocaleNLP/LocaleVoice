@@ -16,6 +16,7 @@ from localevoice.knowledge.retrieve import (
     tokenize,
 )
 from localevoice.pipeline.clarify import GENERIC, classify_question
+from localevoice.pipeline.hygiene import hygiene_report
 from localevoice.pipeline.intent import UNSUPPORTED_GENERAL, classify_intent
 from localevoice.pipeline.trace import (
     build_trace,
@@ -30,14 +31,18 @@ from localevoice.providers.meta_chat import (
 )
 
 SYSTEM_PROMPT = """You answer farming questions for a Moroccan farmer. Rules:
-1. Use ONLY the evidence passages below as the factual basis for agricultural claims. Each passage is labeled with its source ID.
-2. If the evidence does not answer the question, say so plainly and do not guess. Never invent facts, citations, or source IDs.
-3. Cite every agricultural claim with the source ID in square brackets, e.g. [feedipedia-wheat-grain]. Never cite a source ID that was not supplied to you.
-4. Prefer concise, understandable Moroccan Darija when the question is in Darija or Arabic script; otherwise match the question's language simply.
-5. Distinguish general information from advice that needs a local agronomist or veterinarian. Ask for missing context (crop, animal, location, season, symptoms) when it materially affects the recommendation.
-6. Do not give chemical, pesticide, dosage, or treatment instructions unless they appear verbatim in the supplied evidence; if absent, say a qualified local specialist must decide.
-7. Keep uncertainty visible: say what is unknown.
-8. Never invent, rename, or cite a Feedipedia source or document ID. Only the source IDs listed above exist; if none of them supports a claim, say the evidence does not cover it."""
+1. Use ONLY the evidence passages below as the factual basis for agricultural claims. Each passage is labeled with its source ID. Do not use general knowledge for agricultural facts.
+2. If the evidence does not answer the question, say so plainly and do not guess. Never invent facts, citations, or source IDs. Never invent Moroccan regional, soil, climate, or farm-specific information: the passages contain no regional guidance, so say that when the question needs it.
+3. Cite every agricultural claim with the source ID in square brackets, e.g. [feedipedia-wheat-grain]. Never cite a source ID that was not supplied to you. Write every citation completely and exactly; never truncate or alter an ID.
+4. Answer ONLY the question asked. If several passages were supplied but only some answer it, use only those; do not merge unrelated topics (e.g. wheat feeding with olive processing) into one narrative. A retrieved passage is not permission to discuss its topic.
+5. If the question has several parts, answer each supported part separately and explicitly name the parts the evidence does not cover. Never present a general recommendation as established by a cited source: distinguish "the source says X" from "you may ask a specialist about Y".
+6. Structure evidence-backed answers as: (1) the direct answer first; (2) a brief explanation from the evidence; (3) what the evidence does not cover; (4) a practical next step ONLY if the evidence supports one, otherwise name the local specialist; (5) citations with every claim. Do not repeat the question. Keep any disclaimer to one sentence.
+7. Prefer concise, understandable Moroccan Darija when the question is in Darija or Arabic script; otherwise match the question's language simply.
+8. Stay in ONE language: no English fragments inside an Arabic answer, no half-translated words, no duplicated or incomplete sentences. Keep technical terms (crop names such as blé, niébé, luzerne, tourteau) in their recognized form instead of inventing translations; if a term has no natural Darija form, keep it once as-is and continue in Darija.
+9. Distinguish general information from advice that needs a local agronomist or veterinarian. Ask for missing context (crop, animal, location, season, symptoms) when it materially affects the recommendation.
+10. Do not give chemical, pesticide, dosage, or treatment instructions unless they appear verbatim in the supplied evidence; if absent, say a qualified local specialist must decide.
+11. Keep uncertainty visible: say what is unknown.
+12. Never invent, rename, or cite a Feedipedia source or document ID. Only the source IDs listed above exist; if none of them supports a claim, say the evidence does not cover it."""
 
 INSUFFICIENT_EVIDENCE_MESSAGE = (
     "I could not find relevant evidence for this question in the available "
@@ -47,6 +52,7 @@ INSUFFICIENT_EVIDENCE_MESSAGE = (
 )
 
 _ARABIC_CHAR = re.compile(r"[\u0600-\u06ff]")
+_CITATION_TEXT = re.compile(r"\[[A-Za-z0-9][A-Za-z0-9._-]*\]")
 
 
 @dataclass
@@ -191,6 +197,7 @@ def answer_question(
         status: str,
         category: str | None,
         error_type: str | None = None,
+        hygiene: dict | None = None,
     ) -> dict:
         return build_trace(
             question=question,
@@ -209,6 +216,7 @@ def answer_question(
             citation_check=citation_check,
             status=status,
             error_type=error_type,
+            hygiene=hygiene,
         )
 
     if intent_info.response is not None:
@@ -333,6 +341,7 @@ def answer_question(
         )
     elapsed = int((time.monotonic() - start) * 1000)
     citation_check = validate_citations(answer_text, selected_ids)
+    hygiene = hygiene_report(_CITATION_TEXT.sub(" ", answer_text))
     return AnswerResult(
         question=question,
         answer_text=answer_text,
@@ -351,5 +360,6 @@ def answer_question(
             citation_check=citation_check,
             status="answered",
             category=top_category,
+            hygiene=hygiene,
         ),
     )

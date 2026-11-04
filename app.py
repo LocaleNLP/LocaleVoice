@@ -543,6 +543,7 @@ elif stage == "answer":
         if check is not None:
             found = check.get("found") or []
             invalid = check.get("invalid") or []
+            malformed = check.get("malformed") or []
             if invalid:
                 st.caption(
                     f"Citation check: {len(invalid)} citation(s) not in "
@@ -555,6 +556,12 @@ elif stage == "answer":
                 )
             else:
                 st.caption("Citation check: no citations found in the answer.")
+            if malformed:
+                st.warning(
+                    "Some citations look broken "
+                    f"({', '.join(malformed)}). The written answer above "
+                    "is shown as generated; verify it against the sources."
+                )
         if result.evidence and not result.error:
             render_listen(result)
         if result.trace:

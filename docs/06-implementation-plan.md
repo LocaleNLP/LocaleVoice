@@ -1,4 +1,24 @@
-# LocaleVoice — Implementation Plan (Milestone 6B)
+# LocaleVoice — Implementation Plan (Milestone 6C)
+
+## 0j. Milestone 6C work items — answer quality + grounding (done)
+
+1. Diagnosis: malformed citations were invisible to validation
+   (`olive-cake]` passed containment); no language-consistency
+   rules; tangential retrieval + weak prompt allowed topic mixing.
+2. Prompt 8→12 rules: evidence-only, no invented regional facts,
+   exact citations, answer-only-the-question, multi-part scoping,
+   fixed answer structure, one-language rule.
+3. Validation: malformed-citation detection (`syntax_ok`) with UI
+   warning; hygiene flags (Latin fragments, repeated sentences)
+   in trace; limits documented (containment ≠ truth, no semantic
+   verification, no automated Darija proof).
+4. Suites: `test_answer_hygiene` (7) + `test_answer_quality` A–L
+   (13, mocked); problem-answer fixture reconstructed from
+   symptoms (no screenshot provided).
+5. Live: multi-topic Darija question structured correctly, soil/
+   climate named uncovered, trace clean — one sample, not proof.
+6. Regression: 335 passed (21 new); 7/7 and 20/20 hold. Human
+   Darija approval still pending. No commit/push.
 
 ## 0i. Milestone 6B work items — safety audit + validation readiness (done)
 

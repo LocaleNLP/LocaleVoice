@@ -20,6 +20,12 @@ from localevoice.pipeline.intent import (
     Intent,
     classify_intent,
 )
+from localevoice.pipeline.hygiene import (
+    KNOWN_LATIN_TERMS,
+    find_latin_fragments,
+    find_repeated_sentences,
+    hygiene_report,
+)
 from localevoice.pipeline.conversation import (
     ABSTAINED,
     ANSWERED,
@@ -72,6 +78,9 @@ __all__ = [
     "classify_question",
     "extract_context_slots",
     "extract_slot_values",
+    "find_latin_fragments",
+    "find_repeated_sentences",
+    "hygiene_report",
     "find_citations",
     "finish_conversation",
     "infer_language",

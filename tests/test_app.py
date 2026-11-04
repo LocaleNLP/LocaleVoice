@@ -458,6 +458,22 @@ def test_tts_failure_keeps_written_answer(monkeypatch):
         assert len(app.error) == 0  # caption, not a failure state
 
 
+def test_malformed_citation_shows_warning_not_silent_success(monkeypatch):
+    monkeypatch.setenv("META_CHAT_MODEL", "test-model")
+    with patch("openai.OpenAI") as cls:
+        cls.return_value.chat.completions.create.return_value = _chat_response(
+            "القمح مزيان olive-cake] بزاف. [feedipedia-wheat-grain]"
+        )
+        app = _run()
+        app.text_area[0].set_value("Is wheat good for cattle?")
+        app.run()
+        _click(app, "Continue with typed text")
+        _click(app, "Confirm")
+        assert [h.value for h in app.header] == ["Answer"]
+        assert any("broken" in w.value for w in app.warning)
+        assert any("olive-cake]" in w.value for w in app.warning)
+
+
 def test_no_listen_control_without_evidence(monkeypatch):
     monkeypatch.setenv("META_CHAT_MODEL", "test-model")
     with patch("openai.OpenAI") as cls:
